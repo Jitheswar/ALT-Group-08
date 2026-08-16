@@ -1,0 +1,1057 @@
+{
+  "divergences": [
+    {
+      "evaluation_role_id": "eval-role-01",
+      "candidate_id": "resume-atlas-2725",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-01",
+      "candidate_id": "resume-atlas-3357",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-01",
+      "candidate_id": "resume-atlas-5898",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-01",
+      "candidate_id": "resume-atlas-6062",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-02",
+      "candidate_id": "resume-atlas-155",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-02",
+      "candidate_id": "resume-atlas-178",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-02",
+      "candidate_id": "resume-atlas-6048",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-02",
+      "candidate_id": "resume-atlas-7443",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-03",
+      "candidate_id": "resume-atlas-161",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-03",
+      "candidate_id": "resume-atlas-3033",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-03",
+      "candidate_id": "resume-atlas-6178",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-03",
+      "candidate_id": "resume-atlas-6249",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-04",
+      "candidate_id": "resume-atlas-3397",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-04",
+      "candidate_id": "resume-atlas-377",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-04",
+      "candidate_id": "resume-atlas-6263",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-04",
+      "candidate_id": "resume-atlas-6286",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-05",
+      "candidate_id": "resume-atlas-325",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-05",
+      "candidate_id": "resume-atlas-6545",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-05",
+      "candidate_id": "resume-atlas-6690",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-05",
+      "candidate_id": "resume-atlas-6987",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-06",
+      "candidate_id": "resume-atlas-340",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-06",
+      "candidate_id": "resume-atlas-3966",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-06",
+      "candidate_id": "resume-atlas-6637",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-06",
+      "candidate_id": "resume-atlas-7756",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-07",
+      "candidate_id": "resume-atlas-3151",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-07",
+      "candidate_id": "resume-atlas-3197",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-07",
+      "candidate_id": "resume-atlas-3249",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-07",
+      "candidate_id": "resume-atlas-999",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-08",
+      "candidate_id": "resume-atlas-493",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-08",
+      "candidate_id": "resume-atlas-7094",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-08",
+      "candidate_id": "resume-atlas-7712",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-08",
+      "candidate_id": "resume-atlas-9144",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-09",
+      "candidate_id": "resume-atlas-324",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-09",
+      "candidate_id": "resume-atlas-3471",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-09",
+      "candidate_id": "resume-atlas-7474",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-09",
+      "candidate_id": "resume-atlas-9429",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-10",
+      "candidate_id": "resume-atlas-3449",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-10",
+      "candidate_id": "resume-atlas-7297",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-10",
+      "candidate_id": "resume-atlas-7325",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-10",
+      "candidate_id": "resume-atlas-8187",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-11",
+      "candidate_id": "resume-atlas-2728",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-11",
+      "candidate_id": "resume-atlas-3385",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-11",
+      "candidate_id": "resume-atlas-7432",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-11",
+      "candidate_id": "resume-atlas-7824",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-12",
+      "candidate_id": "resume-atlas-13258",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-12",
+      "candidate_id": "resume-atlas-7549",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-12",
+      "candidate_id": "resume-atlas-7713",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-12",
+      "candidate_id": "resume-atlas-8025",
+      "hand_relevant": true,
+      "proxy_relevant": false,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-13",
+      "candidate_id": "resume-atlas-7246",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-13",
+      "candidate_id": "resume-atlas-7744",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-13",
+      "candidate_id": "resume-atlas-7905",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-13",
+      "candidate_id": "resume-atlas-924",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-14",
+      "candidate_id": "resume-atlas-6401",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-14",
+      "candidate_id": "resume-atlas-7983",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-14",
+      "candidate_id": "resume-atlas-8012",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-14",
+      "candidate_id": "resume-atlas-9624",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-15",
+      "candidate_id": "resume-atlas-10087",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-15",
+      "candidate_id": "resume-atlas-3723",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-15",
+      "candidate_id": "resume-atlas-3729",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-15",
+      "candidate_id": "resume-atlas-9476",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-16",
+      "candidate_id": "resume-atlas-833",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-16",
+      "candidate_id": "resume-atlas-8426",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-16",
+      "candidate_id": "resume-atlas-8478",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-16",
+      "candidate_id": "resume-atlas-8548",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-17",
+      "candidate_id": "resume-atlas-10062",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-17",
+      "candidate_id": "resume-atlas-3987",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-17",
+      "candidate_id": "resume-atlas-959",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-17",
+      "candidate_id": "resume-atlas-996",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-18",
+      "candidate_id": "resume-atlas-3963",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-18",
+      "candidate_id": "resume-atlas-3968",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-18",
+      "candidate_id": "resume-atlas-8520",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-18",
+      "candidate_id": "resume-atlas-8997",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-19",
+      "candidate_id": "resume-atlas-1219",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-19",
+      "candidate_id": "resume-atlas-3999",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-19",
+      "candidate_id": "resume-atlas-4768",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-19",
+      "candidate_id": "resume-atlas-8922",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-20",
+      "candidate_id": "resume-atlas-5719",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-20",
+      "candidate_id": "resume-atlas-8628",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-20",
+      "candidate_id": "resume-atlas-9016",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-20",
+      "candidate_id": "resume-atlas-9069",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-21",
+      "candidate_id": "resume-atlas-10972",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-21",
+      "candidate_id": "resume-atlas-4452",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-21",
+      "candidate_id": "resume-atlas-9171",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-21",
+      "candidate_id": "resume-atlas-9363",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-22",
+      "candidate_id": "resume-atlas-10705",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-22",
+      "candidate_id": "resume-atlas-11704",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-22",
+      "candidate_id": "resume-atlas-1408",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-23",
+      "candidate_id": "resume-atlas-1301",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-23",
+      "candidate_id": "resume-atlas-1517",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-23",
+      "candidate_id": "resume-atlas-6891",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-24",
+      "candidate_id": "resume-atlas-2017",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-24",
+      "candidate_id": "resume-atlas-6825",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-24",
+      "candidate_id": "resume-atlas-9631",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-25",
+      "candidate_id": "resume-atlas-10492",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-25",
+      "candidate_id": "resume-atlas-1496",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-25",
+      "candidate_id": "resume-atlas-4624",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-26",
+      "candidate_id": "resume-atlas-1606",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-26",
+      "candidate_id": "resume-atlas-4618",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-26",
+      "candidate_id": "resume-atlas-7158",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-27",
+      "candidate_id": "resume-atlas-10208",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-27",
+      "candidate_id": "resume-atlas-136",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-27",
+      "candidate_id": "resume-atlas-638",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-28",
+      "candidate_id": "resume-atlas-10196",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-28",
+      "candidate_id": "resume-atlas-10478",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-28",
+      "candidate_id": "resume-atlas-4994",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-29",
+      "candidate_id": "resume-atlas-10683",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-29",
+      "candidate_id": "resume-atlas-10738",
+      "hand_relevant": true,
+      "proxy_relevant": false,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-29",
+      "candidate_id": "resume-atlas-12092",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-30",
+      "candidate_id": "resume-atlas-2415",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-30",
+      "candidate_id": "resume-atlas-4899",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-30",
+      "candidate_id": "resume-atlas-5175",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-31",
+      "candidate_id": "resume-atlas-11041",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-31",
+      "candidate_id": "resume-atlas-133",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-31",
+      "candidate_id": "resume-atlas-5242",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-32",
+      "candidate_id": "resume-atlas-1953",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-32",
+      "candidate_id": "resume-atlas-3921",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-32",
+      "candidate_id": "resume-atlas-6202",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-33",
+      "candidate_id": "resume-atlas-2203",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-33",
+      "candidate_id": "resume-atlas-5177",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-33",
+      "candidate_id": "resume-atlas-5783",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-34",
+      "candidate_id": "resume-atlas-12001",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-34",
+      "candidate_id": "resume-atlas-5206",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-34",
+      "candidate_id": "resume-atlas-7534",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-35",
+      "candidate_id": "resume-atlas-11904",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-35",
+      "candidate_id": "resume-atlas-2312",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-35",
+      "candidate_id": "resume-atlas-7266",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-36",
+      "candidate_id": "resume-atlas-12040",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-36",
+      "candidate_id": "resume-atlas-12504",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-36",
+      "candidate_id": "resume-atlas-9447",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-37",
+      "candidate_id": "resume-atlas-12177",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-37",
+      "candidate_id": "resume-atlas-12350",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-37",
+      "candidate_id": "resume-atlas-8223",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-38",
+      "candidate_id": "resume-atlas-10019",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-38",
+      "candidate_id": "resume-atlas-2338",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-38",
+      "candidate_id": "resume-atlas-2464",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-39",
+      "candidate_id": "resume-atlas-12755",
+      "hand_relevant": false,
+      "proxy_relevant": true,
+      "agree": false
+    },
+    {
+      "evaluation_role_id": "eval-role-39",
+      "candidate_id": "resume-atlas-1668",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-39",
+      "candidate_id": "resume-atlas-2528",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-40",
+      "candidate_id": "resume-atlas-10958",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-40",
+      "candidate_id": "resume-atlas-12863",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-40",
+      "candidate_id": "resume-atlas-13013",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-41",
+      "candidate_id": "resume-atlas-12531",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-41",
+      "candidate_id": "resume-atlas-1561",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-41",
+      "candidate_id": "resume-atlas-5856",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-42",
+      "candidate_id": "resume-atlas-11588",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-42",
+      "candidate_id": "resume-atlas-13127",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-42",
+      "candidate_id": "resume-atlas-7426",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-43",
+      "candidate_id": "resume-atlas-1087",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-43",
+      "candidate_id": "resume-atlas-13213",
+      "hand_relevant": true,
+      "proxy_relevant": true,
+      "agree": true
+    },
+    {
+      "evaluation_role_id": "eval-role-43",
+      "candidate_id": "resume-atlas-246",
+      "hand_relevant": false,
+      "proxy_relevant": false,
+      "agree": true
+    }
+  ],
+  "agreement_rate": 0.8733333333333333,
+  "proxy_false_positive_rate": 0.16831683168316833,
+  "proxy_false_negative_rate": 0.04081632653061224
+}

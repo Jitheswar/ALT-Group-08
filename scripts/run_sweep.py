@@ -7,6 +7,11 @@ result that was produced by a different model than the one described
 would misrepresent what was measured - the sweep's own correctness is
 covered by tests/test_sweep.py against fakes instead.
 
+The checked-in Gold Set (ticket 08) is excluded from the corpus before
+sweeping, via screening.gold_set.exclude_gold_set_candidates, so a Resume
+a human already hand-labelled is never also scored through Proxy Relevance
+at corpus scale in the same run.
+
 Usage:
     uv run --group data python scripts/run_sweep.py \
         --resume-atlas-parquet PATH \
@@ -24,6 +29,7 @@ from pathlib import Path
 
 from screening.deepseek_client import DeepSeekModelClient, build_live_transport
 from screening.eval_roles import read_evaluation_roles
+from screening.gold_set import exclude_gold_set_candidates, read_gold_set
 from screening.proxy_relevance import CorpusResume
 from screening.sweep import run_sweep
 
@@ -52,6 +58,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--evaluation-roles-dir", type=Path, default=Path("data/evaluation_roles/roles")
     )
+    parser.add_argument("--gold-set", type=Path, default=Path("data/gold_set/gold_set.json"))
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument(
         "--top-band-size",
@@ -75,6 +82,12 @@ def main(argv: list[str] | None = None) -> int:
     if not corpus:
         print(f"error: no Resumes loaded from {args.resume_atlas_parquet}", file=sys.stderr)
         return 1
+
+    if args.gold_set.exists():
+        gold_set = read_gold_set(args.gold_set)
+        before = len(corpus)
+        corpus = exclude_gold_set_candidates(corpus, gold_set)
+        print(f"Held {before - len(corpus)} Gold Set Resume(s) out of the sweep corpus")
 
     model_client = DeepSeekModelClient(build_live_transport(api_key))
     kwargs = {} if args.top_band_size is None else {"k": args.top_band_size}
