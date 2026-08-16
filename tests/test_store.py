@@ -140,6 +140,40 @@ def test_a_failed_write_does_not_permanently_block_the_run_id(tmp_path: Path, mo
     assert path.exists()
 
 
+def test_saved_run_records_parse_failure_and_cache_token_counts(tmp_path: Path):
+    store = FileRunStore(tmp_path)
+    run = ScreeningRun(
+        run_id="run-1",
+        role=_role(),
+        shortlist=_shortlist(),
+        created_at=datetime.now(timezone.utc),
+        parse_failure_count=2,
+        parse_failure_rate=0.25,
+        cache_hit_tokens=1200,
+        cache_miss_tokens=300,
+    )
+
+    path = store.save(run)
+
+    header = json.loads(path.read_text().splitlines()[0])
+    assert header["parse_failure_count"] == 2
+    assert header["parse_failure_rate"] == 0.25
+    assert header["cache_hit_tokens"] == 1200
+    assert header["cache_miss_tokens"] == 300
+
+
+def test_a_run_with_no_reported_metrics_defaults_them_to_zero(tmp_path: Path):
+    store = FileRunStore(tmp_path)
+
+    path = store.save(_run())
+
+    header = json.loads(path.read_text().splitlines()[0])
+    assert header["parse_failure_count"] == 0
+    assert header["parse_failure_rate"] == 0.0
+    assert header["cache_hit_tokens"] == 0
+    assert header["cache_miss_tokens"] == 0
+
+
 def test_different_runs_get_their_own_file(tmp_path: Path):
     store = FileRunStore(tmp_path)
 

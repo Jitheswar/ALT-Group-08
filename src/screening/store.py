@@ -26,6 +26,10 @@ class ScreeningRun:
     role: Role
     shortlist: Shortlist
     created_at: datetime
+    parse_failure_count: int = 0
+    parse_failure_rate: float = 0.0
+    cache_hit_tokens: int = 0
+    cache_miss_tokens: int = 0
 
 
 class RunAlreadyExists(Exception):
@@ -73,6 +77,10 @@ def _header(run: ScreeningRun) -> dict:
         "run_id": run.run_id,
         "created_at": run.created_at.isoformat(),
         "role": asdict(run.role),
+        "parse_failure_count": run.parse_failure_count,
+        "parse_failure_rate": run.parse_failure_rate,
+        "cache_hit_tokens": run.cache_hit_tokens,
+        "cache_miss_tokens": run.cache_miss_tokens,
     }
 
 

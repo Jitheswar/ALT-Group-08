@@ -177,6 +177,23 @@ def test_a_response_with_a_duplicate_verdict_becomes_unresolved():
     assert isinstance(entry.outcome, Unresolved)
 
 
+def test_stable_prompt_prefix_is_byte_identical_across_every_call_in_a_run():
+    role = _role()
+    candidates = [
+        Candidate(id="alice", resume=Resume(text="Alice's resume, ten years of Python.")),
+        Candidate(id="bob", resume=Resume(text="Bob's resume, five years of Rust.")),
+    ]
+    model_client = RecordingFakeModelClient(
+        responses=[_qualified_response(), _qualified_response()]
+    )
+
+    run_screening(role, candidates, model_client)
+
+    prefixes = [call.prompt.split("Resume:\n", 1)[0] for call in model_client.calls]
+    assert len(prefixes) == 2
+    assert prefixes[0] == prefixes[1]
+
+
 def test_shortlist_preserves_submission_order():
     role = _role()
     candidates = [
