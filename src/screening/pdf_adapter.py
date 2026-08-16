@@ -4,7 +4,7 @@ consumes unchanged (ticket 10).
 Lives outside the core and outside every evaluated path, per the spec's
 Ingestion decision - the evaluated path (screening.core, the evaluation
 harness, every sweep script) consumes plain Resume text directly and never
-imports this module. Only a future demo UI (ticket 11) is meant to call it,
+imports this module. Only the demo UI (screening.web, ticket 11) calls it,
 so a parsing bug here can never be mistaken for a ranking bug in the metrics.
 
 Tested entirely on its own, against real PDF bytes, independently of the
