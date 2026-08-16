@@ -18,7 +18,7 @@ from screening.domain import (
     Unresolved,
 )
 from screening.model_client import ModelClient, ModelClientError, ScreeningResponse
-from screening.ranking import rank_shortlist
+from screening.ranking import DEFAULT_TOP_BAND_SIZE, rank_shortlist
 
 
 class RequirementSetNotApproved(Exception):
@@ -26,7 +26,10 @@ class RequirementSetNotApproved(Exception):
 
 
 def run_screening(
-    role: Role, candidates: Sequence[Candidate], model_client: ModelClient
+    role: Role,
+    candidates: Sequence[Candidate],
+    model_client: ModelClient,
+    top_band_size: int = DEFAULT_TOP_BAND_SIZE,
 ) -> Shortlist:
     if not role.requirement_set.approved:
         raise RequirementSetNotApproved(
@@ -41,7 +44,7 @@ def run_screening(
         for candidate in candidates
     )
     screened = Shortlist(entries=entries)
-    return rank_shortlist(role, candidates, screened, model_client)
+    return rank_shortlist(role, candidates, screened, model_client, top_band_size=top_band_size)
 
 
 def build_screening_prompt(role: Role, candidate: Candidate) -> str:

@@ -7,8 +7,16 @@ Since ticket 04, run_screening also drives rubric-based Ranking over every
 Qualified Candidate, so any test that produces a Qualified outcome must
 script a matching RankingResponse after the Screening responses - the model
 client sees Screening calls for the whole batch first, then Ranking calls
-for the Qualified subset, in shortlist order. Ranking-specific behaviour
-(ordering by Fit, redaction, the ADR-0002/ADR-0005 seam guarantees) lives in
+for the Qualified subset, in shortlist order. Since ticket 05, a comparative
+pass runs after that whenever two or more Qualified Candidates land in the
+top band (the default band comfortably covers every batch in this file), so
+a test with exactly two Qualified outcomes must also script one matching
+ComparativeResponse - `sorted` makes exactly one comparison for a band of
+two, regardless of its internal implementation. A test whose point is
+rubric-stage behaviour specifically, rather than the comparative pass,
+instead passes top_band_size=0 to opt the comparative pass out entirely.
+Ranking-specific behaviour (ordering by Fit, the comparative pass,
+redaction, the ADR-0002/ADR-0005 seam guarantees) lives in
 tests/test_ranking.py; these tests only script it minimally to keep
 run_screening's own invariants passing.
 """
@@ -29,6 +37,8 @@ from screening.domain import (
     Unresolved,
 )
 from screening.model_client import (
+    ComparativeResponse,
+    ComparativeWinner,
     FitDimensionResponse,
     FitRating,
     ModelClientError,
@@ -102,6 +112,10 @@ def _fit_response(rating: FitRating = "strong") -> RankingResponse:
             for dimension in DIMENSIONS
         ]
     )
+
+
+def _comparative_response(winner: ComparativeWinner = "a") -> ComparativeResponse:
+    return ComparativeResponse(winner=winner)
 
 
 def test_every_submitted_candidate_appears_exactly_once_whatever_happened():
@@ -222,6 +236,7 @@ def test_stable_prompt_prefix_is_byte_identical_across_every_call_in_a_run():
             _qualified_response(),
             _fit_response(),
             _fit_response(),
+            _comparative_response(),
         ]
     )
 
@@ -243,6 +258,11 @@ def test_stable_prompt_prefix_is_byte_identical_across_every_call_in_a_run():
 
 
 def test_shortlist_preserves_submission_order_among_equally_fit_qualified_candidates():
+    """A rubric-stage property, so top_band_size=0 keeps the comparative
+    pass out of it entirely - which pairs within a tied band it would
+    compare, and in what order, is an implementation detail of the stdlib
+    sort rather than something this test should depend on.
+    """
     role = _role()
     candidates = [
         Candidate(id="cara", resume=Resume(text="Cara's resume")),
@@ -260,6 +280,6 @@ def test_shortlist_preserves_submission_order_among_equally_fit_qualified_candid
         ]
     )
 
-    shortlist = run_screening(role, candidates, model_client)
+    shortlist = run_screening(role, candidates, model_client, top_band_size=0)
 
     assert [entry.candidate_id for entry in shortlist.entries] == ["cara", "alice", "bob"]

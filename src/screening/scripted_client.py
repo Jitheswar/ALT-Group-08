@@ -10,6 +10,8 @@ from __future__ import annotations
 import re
 
 from screening.model_client import (
+    ComparativeResponse,
+    ComparativeWinner,
     ExtractionResponse,
     FitDimensionResponse,
     FitRating,
@@ -65,17 +67,15 @@ class ScriptedModelClient:
         if response_model is RankingResponse:
             role_title = _parse_role_title(prompt)
             redacted_resume_text = _parse_redacted_resume(prompt)
-            dimensions = [
-                FitDimensionResponse(
-                    dimension=dimension,
-                    rating=_rate_dimension(dimension, role_title, redacted_resume_text),
-                    justification=(
-                        f"Redacted Resume evidences {dimension.replace('_', ' ')}"
-                    ),
-                )
-                for dimension in DIMENSIONS
-            ]
-            return response_model(dimensions=dimensions)
+            return response_model(dimensions=_fit_dimensions(role_title, redacted_resume_text))
+
+        if response_model is ComparativeResponse:
+            role_title = _parse_role_title(prompt)
+            resume_a_text, resume_b_text = _parse_comparative_resumes(prompt)
+            score_a = _fit_score(role_title, resume_a_text)
+            score_b = _fit_score(role_title, resume_b_text)
+            winner: ComparativeWinner = "a" if score_a >= score_b else "b"
+            return response_model(winner=winner)
 
         raise UnsupportedResponseModel(
             f"ScriptedModelClient does not support {response_model!r}"
@@ -150,6 +150,35 @@ def _parse_role_title(prompt: str) -> str:
 def _parse_redacted_resume(prompt: str) -> str:
     _, _, resume_text = prompt.partition("Redacted Resume:\n")
     return resume_text.strip()
+
+
+def _parse_comparative_resumes(prompt: str) -> tuple[str, str]:
+    _, _, after_a = prompt.partition("Candidate A:\n")
+    resume_a_text, _, after_b = after_a.partition("\n\nCandidate B:\n")
+    return resume_a_text.strip(), after_b.strip()
+
+
+def _fit_dimensions(role_title: str, resume_text: str) -> list[FitDimensionResponse]:
+    return [
+        FitDimensionResponse(
+            dimension=dimension,
+            rating=_rate_dimension(dimension, role_title, resume_text),
+            justification=f"Redacted Resume evidences {dimension.replace('_', ' ')}",
+        )
+        for dimension in DIMENSIONS
+    ]
+
+
+_LEVEL_WEIGHT: dict[FitRating, int] = {
+    "minimal": 0, "moderate": 1, "strong": 2, "exceptional": 3,
+}
+
+
+def _fit_score(role_title: str, resume_text: str) -> int:
+    return sum(
+        _LEVEL_WEIGHT[_rate_dimension(dimension, role_title, resume_text)]
+        for dimension in DIMENSIONS
+    )
 
 
 def _bucket(count: int, thresholds: tuple[int, int, int]) -> FitRating:

@@ -259,6 +259,37 @@ def test_cli_screen_live_flag_without_an_api_key_errors_before_any_run(
     assert not list(runs_dir.glob("*.jsonl"))
 
 
+def test_cli_screen_runs_the_comparative_pass_over_two_or_more_qualified_candidates(
+    tmp_path: Path, capsys
+):
+    """A regression test for the comparative pass added in ticket 05: the
+    scripted client backing the CLI's default (non-live) path must itself
+    handle a ComparativeResponse call, which only happens once two or more
+    Candidates land in the Qualified group - a single Qualified Candidate,
+    as in the other CLI tests above, never exercises it.
+    """
+    proposed_path = _run_extract(tmp_path)
+    approved_path = tmp_path / "approved.json"
+    _write_approved(
+        approved_path,
+        requirements=[{"id": "req-1", "text": "Python programming experience"}],
+    )
+    resumes_dir = tmp_path / "resumes"
+    resumes_dir.mkdir()
+    (resumes_dir / "alice.txt").write_text("Built backend services in Python for six years.")
+    (resumes_dir / "cara.txt").write_text("Wrote Python data pipelines for three years.")
+    runs_dir = tmp_path / "runs"
+
+    exit_code = _run_screen(
+        tmp_path, proposed_path=proposed_path, approved_path=approved_path, runs_dir=runs_dir
+    )
+
+    assert exit_code == 0
+    out = capsys.readouterr().out
+    assert "alice: Qualified" in out
+    assert "cara: Qualified" in out
+
+
 def test_cli_run_record_includes_zeroed_metrics_for_the_scripted_client(tmp_path: Path):
     proposed_path = _run_extract(tmp_path)
     approved_path = tmp_path / "approved.json"

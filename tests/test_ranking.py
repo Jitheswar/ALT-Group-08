@@ -1,9 +1,22 @@
-"""Tests through the core's public entry point for rubric-based Ranking:
-run_screening(role, candidates, model_client) -> Shortlist, with Ranking now
-wired in after Screening. Per the testing decisions in the spec, these
-assert on the Shortlist that comes back and on the calls the model client
-received - the seam that makes ADR-0002 and ADR-0005 testable rather than
-merely intended.
+"""Tests through the core's public entry point for rubric-based Ranking and
+the comparative pass layered over it: run_screening(role, candidates,
+model_client) -> Shortlist, with Ranking wired in after Screening. Per the
+testing decisions in the spec, these assert on the Shortlist that comes
+back and on the calls the model client received - the seam that makes
+ADR-0002 and ADR-0005 testable rather than merely intended.
+
+Whenever two or more Qualified Candidates land in the top band, the
+comparative pass makes at least one ComparativeResponse call, so tests
+that produce two or more Qualified outcomes need to account for it. A
+band of exactly two always makes exactly one comparison, so
+RecordingFakeModelClient can script that call with `_comparison()` - but
+which of the two entries the sort passes as "a" versus "b" is an
+implementation detail, so `_comparison()` is only safe for a test that
+doesn't care which candidate wins (e.g. a redaction check, or a failure
+path). Any test asserting on the resulting *order* - for a band of two or
+more - uses ScoreBasedComparativeFakeModelClient instead: a comparator
+that judges by a "STRENGTH:<n>" marker embedded in each Candidate's resume
+text, correct regardless of call order or argument order.
 """
 
 from __future__ import annotations
@@ -21,6 +34,8 @@ from screening.domain import (
     Unresolved,
 )
 from screening.model_client import (
+    ComparativeResponse,
+    ComparativeWinner,
     FitDimensionResponse,
     FitRating,
     ModelClientError,
@@ -29,7 +44,7 @@ from screening.model_client import (
     ScreeningResponse,
 )
 from screening.ranking import DIMENSIONS
-from tests.fakes import RecordingFakeModelClient
+from tests.fakes import RecordingFakeModelClient, ScoreBasedComparativeFakeModelClient
 
 REQ_PYTHON = Requirement(id="req-python", text="5+ years of Python")
 
@@ -73,13 +88,22 @@ def _fit(rating: FitRating) -> RankingResponse:
     )
 
 
+def _comparison(winner: ComparativeWinner = "a") -> ComparativeResponse:
+    return ComparativeResponse(winner=winner)
+
+
 def test_qualified_candidates_are_ordered_by_fit_best_first():
     role = _role()
+    # Which of the two candidates a comparator call labels "a" vs "b" is an
+    # implementation detail of sorted()'s argument order, not something
+    # this test should assume - so it uses the content-based comparative
+    # fake and gives bob the higher comparative strength too, agreeing
+    # with (rather than fighting) his higher rubric fit.
     candidates = [
-        Candidate(id="alice", resume=Resume(text="Alice Doe\nSenior backend engineer.")),
-        Candidate(id="bob", resume=Resume(text="Bob Roe\nJunior backend engineer.")),
+        Candidate(id="alice", resume=Resume(text="Alice Doe\nSenior backend engineer. STRENGTH:1")),
+        Candidate(id="bob", resume=Resume(text="Bob Roe\nJunior backend engineer. STRENGTH:9")),
     ]
-    model_client = RecordingFakeModelClient(
+    model_client = ScoreBasedComparativeFakeModelClient(
         responses=[_qualified(), _qualified(), _fit("minimal"), _fit("exceptional")]
     )
 
@@ -216,3 +240,126 @@ def test_a_ranking_response_missing_a_dimension_leaves_the_candidate_unranked_no
     [entry] = shortlist.entries
     assert isinstance(entry.outcome, Qualified)
     assert entry.outcome.fit is None
+
+
+def _candidate(id_: str, *, strength: int) -> Candidate:
+    return Candidate(id=id_, resume=Resume(text=f"Backend engineer. STRENGTH:{strength}"))
+
+
+def test_comparative_pass_reorders_the_top_band_and_leaves_the_tail_rubric_ordered():
+    role = _role()
+    # Rubric order is a, b, c, d (by descending fit rating). Comparative
+    # strength disagrees with rubric order for the top two only, so a
+    # top_band_size of 2 must flip a and b while leaving c, d untouched.
+    candidates = [
+        _candidate("a", strength=1),
+        _candidate("b", strength=9),
+        _candidate("c", strength=5),
+        _candidate("d", strength=5),
+    ]
+    model_client = ScoreBasedComparativeFakeModelClient(
+        responses=[
+            _qualified(), _qualified(), _qualified(), _qualified(),
+            _fit("exceptional"), _fit("strong"), _fit("moderate"), _fit("minimal"),
+        ]
+    )
+
+    shortlist = run_screening(role, candidates, model_client, top_band_size=2)
+
+    assert [entry.candidate_id for entry in shortlist.entries] == ["b", "a", "c", "d"]
+
+
+def test_comparative_pass_makes_on_the_order_of_n_log_n_calls_over_the_band_not_the_full_batch():
+    role = _role()
+    candidates = [_candidate(f"c{i}", strength=i) for i in range(8)] + [
+        _candidate("d1", strength=0)
+    ]
+    model_client = ScoreBasedComparativeFakeModelClient(
+        responses=(
+            [_qualified() for _ in range(8)]
+            + [_disqualified()]
+            + [_fit("strong") for _ in range(8)]
+        )
+    )
+
+    run_screening(role, candidates, model_client, top_band_size=6)
+
+    comparative_calls = [c for c in model_client.calls if c.response_model is ComparativeResponse]
+    # A comparison sort over a band of 6 makes far fewer calls than
+    # pairwise-comparing all 8 Qualified Candidates (28) or the full batch
+    # of 9 (36), and is independent of either.
+    assert 5 <= len(comparative_calls) <= 15
+    for call in comparative_calls:
+        assert "STRENGTH:6" not in call.prompt  # c6, outside the band
+        assert "STRENGTH:7" not in call.prompt  # c7, outside the band
+        assert "d1" not in call.prompt
+
+
+def test_comparative_pass_ordering_is_stable_given_identical_inputs_and_a_deterministic_double():
+    role = _role()
+    candidates = [
+        _candidate("a", strength=3),
+        _candidate("b", strength=9),
+        _candidate("c", strength=1),
+    ]
+
+    def _run() -> list[str]:
+        model_client = ScoreBasedComparativeFakeModelClient(
+            responses=[
+                _qualified(), _qualified(), _qualified(),
+                _fit("strong"), _fit("strong"), _fit("strong"),
+            ]
+        )
+        shortlist = run_screening(role, candidates, model_client)
+        return [entry.candidate_id for entry in shortlist.entries]
+
+    assert _run() == _run() == ["b", "a", "c"]
+
+
+def test_a_failed_comparative_call_leaves_the_pair_in_rubric_order():
+    role = _role()
+    candidates = [_candidate("a", strength=9), _candidate("b", strength=1)]
+    model_client = RecordingFakeModelClient(
+        responses=[
+            _qualified(), _qualified(),
+            _fit("exceptional"), _fit("minimal"),
+            ModelClientError("provider returned malformed output"),
+        ]
+    )
+
+    shortlist = run_screening(role, candidates, model_client)
+
+    assert [entry.candidate_id for entry in shortlist.entries] == ["a", "b"]
+
+
+def test_comparative_pass_never_receives_an_unredacted_resume():
+    role = _role()
+    candidates = [
+        Candidate(id="alice", resume=Resume(text="Alice Doe\nBackend engineer.")),
+        Candidate(id="bob", resume=Resume(text="Bob Roe\nBackend engineer.")),
+    ]
+    model_client = RecordingFakeModelClient(
+        responses=[_qualified(), _qualified(), _fit("strong"), _fit("strong"), _comparison()]
+    )
+
+    run_screening(role, candidates, model_client)
+
+    [comparative_call] = [c for c in model_client.calls if c.response_model is ComparativeResponse]
+    assert "Alice" not in comparative_call.prompt
+    assert "Doe" not in comparative_call.prompt
+    assert "Bob" not in comparative_call.prompt
+    assert "Roe" not in comparative_call.prompt
+    assert comparative_call.prompt.count("[REDACTED-NAME]") == 2
+
+
+def test_band_size_is_configurable_via_a_parameter_not_by_touching_ranking_logic():
+    role = _role()
+    candidates = [_candidate("a", strength=9), _candidate("b", strength=1)]
+    model_client = RecordingFakeModelClient(
+        responses=[_qualified(), _qualified(), _fit("exceptional"), _fit("minimal")]
+    )
+
+    shortlist = run_screening(role, candidates, model_client, top_band_size=1)
+
+    assert [entry.candidate_id for entry in shortlist.entries] == ["a", "b"]
+    assert not any(c.response_model is ComparativeResponse for c in model_client.calls)

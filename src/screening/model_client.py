@@ -75,3 +75,17 @@ class FitDimensionResponse(BaseModel):
 
 class RankingResponse(BaseModel):
     dimensions: list[FitDimensionResponse]
+
+
+ComparativeWinner = Literal["a", "b"]
+
+
+class ComparativeResponse(BaseModel):
+    """No justification field: unlike Screening and rubric Ranking, the
+    comparative pass only reorders an already-justified Fit (ADR-0005's
+    citability guarantee is met by the rubric dimensions on that Fit), so
+    there is nothing downstream that would read a comparative-pass
+    justification.
+    """
+
+    winner: ComparativeWinner

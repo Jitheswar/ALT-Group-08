@@ -6,8 +6,13 @@ from __future__ import annotations
 from screening.core import build_screening_prompt
 from screening.domain import Candidate, JobDescription, Requirement, RequirementSet, Resume, Role
 from screening.extraction import build_extraction_prompt
-from screening.model_client import ExtractionResponse, RankingResponse, ScreeningResponse
-from screening.ranking import DIMENSIONS, build_ranking_prompt
+from screening.model_client import (
+    ComparativeResponse,
+    ExtractionResponse,
+    RankingResponse,
+    ScreeningResponse,
+)
+from screening.ranking import DIMENSIONS, build_comparative_prompt, build_ranking_prompt
 from screening.scripted_client import ScriptedModelClient
 
 
@@ -143,5 +148,47 @@ def test_scripted_client_ranking_is_deterministic_given_the_same_prompt():
 
     first = client.complete(prompt, RankingResponse)
     second = client.complete(prompt, RankingResponse)
+
+    assert first == second
+
+
+def test_scripted_client_supports_comparative_responses():
+    """A regression test for ticket 05: run_screening's comparative pass
+    calls the model client with ComparativeResponse whenever two or more
+    Qualified Candidates land in the top band, so ScriptedModelClient - the
+    CLI's default, network-free client - has to handle it too.
+    """
+    client = ScriptedModelClient()
+    role = Role(
+        id="role-1",
+        title="Backend Engineer",
+        requirement_set=RequirementSet(requirements=(), approved=True),
+    )
+    prompt = build_comparative_prompt(
+        role,
+        "Ten years leading backend Python teams, shipped major systems.",
+        "One internship, no professional experience listed.",
+    )
+
+    response = client.complete(prompt, ComparativeResponse)
+
+    assert response.winner == "a"
+
+
+def test_scripted_client_comparative_response_is_deterministic_given_the_same_prompt():
+    client = ScriptedModelClient()
+    role = Role(
+        id="role-1",
+        title="Backend Engineer",
+        requirement_set=RequirementSet(requirements=(), approved=True),
+    )
+    prompt = build_comparative_prompt(
+        role,
+        "Built backend services in Python for six years.",
+        "Built backend services in Python for six years.",
+    )
+
+    first = client.complete(prompt, ComparativeResponse)
+    second = client.complete(prompt, ComparativeResponse)
 
     assert first == second
