@@ -25,7 +25,7 @@ unredacted Resume (ADR-0005).
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from functools import cmp_to_key
 
 from screening.domain import (
@@ -33,6 +33,7 @@ from screening.domain import (
     Fit,
     FitDimension,
     Qualified,
+    Resume,
     Role,
     Shortlist,
     ShortlistEntry,
@@ -96,6 +97,48 @@ def build_comparative_prompt(role: Role, resume_a_text: str, resume_b_text: str)
     )
 
 
+@dataclass(frozen=True)
+class FitScore:
+    """One Resume's Ranking outcome against a Role: the graded Fit if the
+    model produced a usable one, and the Redacted Resume text it was
+    judged from - kept alongside the Fit so a caller can compare the
+    Redacted Resume itself, not just the judgement it produced. That
+    comparison is what lets screening.counterfactual tell a Redaction
+    leak apart from a judgement the model inferred despite Redaction
+    working correctly.
+    """
+
+    fit: Fit | None
+    redacted_text: str
+
+
+def score_fit(role: Role, resume: Resume, model_client: ModelClient) -> FitScore:
+    """Redacts `resume` and judges its Fit for `role` - the single place a
+    Resume becomes a Fit judgement. Both rank_shortlist (the Ranking
+    stage) and screening.counterfactual (measuring how far that judgement
+    moves) call through here, so both go through the identical
+    redact-then-rank path and neither can silently diverge from it.
+    """
+    redacted_resume = redact_resume(resume)
+    prompt = build_ranking_prompt(role, redacted_resume.text)
+    try:
+        response = model_client.complete(prompt, RankingResponse)
+    except ModelClientError:
+        return FitScore(fit=None, redacted_text=redacted_resume.text)
+
+    response_names = {d.dimension for d in response.dimensions}
+    if response_names != set(DIMENSIONS) or len(response.dimensions) != len(DIMENSIONS):
+        return FitScore(fit=None, redacted_text=redacted_resume.text)
+
+    fit = Fit(
+        dimensions=tuple(
+            FitDimension(name=d.dimension, rating=d.rating, justification=d.justification)
+            for d in sorted(response.dimensions, key=lambda d: _DIMENSION_ORDER[d.dimension])
+        )
+    )
+    return FitScore(fit=fit, redacted_text=redacted_resume.text)
+
+
 def rank_shortlist(
     role: Role,
     candidates: Sequence[Candidate],
@@ -122,28 +165,14 @@ def rank_shortlist(
             passthrough.append(entry)
             continue
 
-        redacted_resume = redact_resume(resume_by_id[entry.candidate_id])
-        prompt = build_ranking_prompt(role, redacted_resume.text)
-        try:
-            response = model_client.complete(prompt, RankingResponse)
-        except ModelClientError:
+        scored = score_fit(role, resume_by_id[entry.candidate_id], model_client)
+        if scored.fit is None:
             unranked.append(entry)
             continue
 
-        response_names = {d.dimension for d in response.dimensions}
-        if response_names != set(DIMENSIONS) or len(response.dimensions) != len(DIMENSIONS):
-            unranked.append(entry)
-            continue
-
-        fit = Fit(
-            dimensions=tuple(
-                FitDimension(name=d.dimension, rating=d.rating, justification=d.justification)
-                for d in sorted(response.dimensions, key=lambda d: _DIMENSION_ORDER[d.dimension])
-            )
-        )
-        ranked_entry = replace(entry, outcome=replace(entry.outcome, fit=fit))
-        ranked.append((ranked_entry, fit_weight(fit)))
-        redacted_text_by_id[entry.candidate_id] = redacted_resume.text
+        ranked_entry = replace(entry, outcome=replace(entry.outcome, fit=scored.fit))
+        ranked.append((ranked_entry, fit_weight(scored.fit)))
+        redacted_text_by_id[entry.candidate_id] = scored.redacted_text
 
     ranked.sort(key=lambda pair: pair[1], reverse=True)
     ranked_entries = [entry for entry, _ in ranked]

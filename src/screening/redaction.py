@@ -195,6 +195,21 @@ def _redact_photo(text: str) -> str:
     return text
 
 
+def detect_candidate_name(text: str) -> str | None:
+    """The exact name string redact_resume would strip, if any - the same
+    detection redact_resume uses internally, exposed so
+    screening.counterfactual can alter precisely the signal Redaction is
+    responsible for removing (ADR-0005).
+    """
+    return _candidate_name(text)
+
+
+def detect_nationality(text: str) -> str | None:
+    """The first nationality token redact_resume would strip, if any."""
+    match = _NATIONALITY.search(text)
+    return match.group(0) if match else None
+
+
 def redact_resume(resume: Resume) -> Resume:
     """Strips name, gender markers, graduation/birth years, nationality,
     and photo from a Resume, deterministically. Photo is redacted first so
