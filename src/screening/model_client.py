@@ -9,7 +9,7 @@ schema Screening calls through it.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Protocol, TypeVar
+from typing import Literal, Protocol, TypeVar
 
 from pydantic import BaseModel
 
@@ -62,3 +62,16 @@ class ProposedRequirementResponse(BaseModel):
 
 class ExtractionResponse(BaseModel):
     requirements: list[ProposedRequirementResponse]
+
+
+FitRating = Literal["minimal", "moderate", "strong", "exceptional"]
+
+
+class FitDimensionResponse(BaseModel):
+    dimension: str
+    rating: FitRating
+    justification: str
+
+
+class RankingResponse(BaseModel):
+    dimensions: list[FitDimensionResponse]

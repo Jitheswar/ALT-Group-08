@@ -18,6 +18,7 @@ from screening.domain import (
     Unresolved,
 )
 from screening.model_client import ModelClient, ModelClientError, ScreeningResponse
+from screening.ranking import rank_shortlist
 
 
 class RequirementSetNotApproved(Exception):
@@ -39,7 +40,8 @@ def run_screening(
         )
         for candidate in candidates
     )
-    return Shortlist(entries=entries)
+    screened = Shortlist(entries=entries)
+    return rank_shortlist(role, candidates, screened, model_client)
 
 
 def build_screening_prompt(role: Role, candidate: Candidate) -> str:

@@ -101,6 +101,7 @@ def _outcome_record(outcome: ScreeningOutcome) -> dict:
         qualified=lambda o: {
             "type": "qualified",
             "verdicts": [asdict(v) for v in o.verdicts],
+            "fit": asdict(o.fit) if o.fit is not None else None,
         },
         disqualified=lambda o: {
             "type": "disqualified",

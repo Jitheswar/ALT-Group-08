@@ -31,6 +31,16 @@ _VALID_PAYLOAD = json.dumps(
     }
 )
 
+_VALID_RANKING_PAYLOAD = json.dumps(
+    {
+        "dimensions": [
+            {"dimension": "role_relevance", "rating": "strong", "justification": "Cites Python backend work"},
+            {"dimension": "skill_depth", "rating": "moderate", "justification": "Several years listed"},
+            {"dimension": "impact_evidence", "rating": "minimal", "justification": "No metrics cited"},
+        ]
+    }
+)
+
 
 class FakeTransport:
     """Records every prompt it is called with and returns scripted
@@ -217,6 +227,7 @@ def test_a_screening_run_completes_end_to_end_through_deepseek_v4_flash():
             RawCompletion(content=unresolved_payload),
             RawCompletion(content=unresolved_payload),
             RawCompletion(content=unresolved_payload),
+            RawCompletion(content=_VALID_RANKING_PAYLOAD),
         ]
     )
     client = DeepSeekModelClient(transport)
@@ -225,8 +236,9 @@ def test_a_screening_run_completes_end_to_end_through_deepseek_v4_flash():
 
     outcomes = {entry.candidate_id: entry.outcome for entry in shortlist.entries}
     assert isinstance(outcomes["alice"], Qualified)
+    assert outcomes["alice"].fit is not None
     assert isinstance(outcomes["bob"], Unresolved)
-    assert client.metrics.total_attempts == 4
+    assert client.metrics.total_attempts == 5
 
 
 class _FakeHttpResponse:

@@ -2,6 +2,15 @@
 candidates, model_client) -> Shortlist. Per the testing decisions in the
 spec, these assert on the Shortlist that comes back and on the calls the
 model client received - never on intermediate structure.
+
+Since ticket 04, run_screening also drives rubric-based Ranking over every
+Qualified Candidate, so any test that produces a Qualified outcome must
+script a matching RankingResponse after the Screening responses - the model
+client sees Screening calls for the whole batch first, then Ranking calls
+for the Qualified subset, in shortlist order. Ranking-specific behaviour
+(ordering by Fit, redaction, the ADR-0002/ADR-0005 seam guarantees) lives in
+tests/test_ranking.py; these tests only script it minimally to keep
+run_screening's own invariants passing.
 """
 
 from __future__ import annotations
@@ -20,10 +29,14 @@ from screening.domain import (
     Unresolved,
 )
 from screening.model_client import (
+    FitDimensionResponse,
+    FitRating,
     ModelClientError,
+    RankingResponse,
     RequirementVerdictResponse,
     ScreeningResponse,
 )
+from screening.ranking import DIMENSIONS
 from tests.fakes import RecordingFakeModelClient
 
 REQ_PYTHON = Requirement(id="req-python", text="5+ years of Python")
@@ -74,6 +87,23 @@ def _disqualified_response() -> ScreeningResponse:
     )
 
 
+def _fit_response(rating: FitRating = "strong") -> RankingResponse:
+    """A RankingResponse covering exactly DIMENSIONS - what a Qualified
+    Candidate needs scripted after their Screening response for the model
+    client's response queue to line up.
+    """
+    return RankingResponse(
+        dimensions=[
+            FitDimensionResponse(
+                dimension=dimension,
+                rating=rating,
+                justification=f"Resume evidences {dimension.replace('_', ' ')}",
+            )
+            for dimension in DIMENSIONS
+        ]
+    )
+
+
 def test_every_submitted_candidate_appears_exactly_once_whatever_happened():
     role = _role()
     candidates = [
@@ -86,6 +116,7 @@ def test_every_submitted_candidate_appears_exactly_once_whatever_happened():
             _qualified_response(),
             _disqualified_response(),
             ModelClientError("provider returned malformed output"),
+            _fit_response(),
         ]
     )
 
@@ -113,7 +144,7 @@ def test_disqualified_candidate_is_marked_with_the_requirement_missed():
 def test_screening_outcomes_carry_a_justification_citing_supporting_text():
     role = _role()
     candidates = [Candidate(id="alice", resume=Resume(text="Alice's resume"))]
-    model_client = RecordingFakeModelClient(responses=[_qualified_response()])
+    model_client = RecordingFakeModelClient(responses=[_qualified_response(), _fit_response()])
 
     shortlist = run_screening(role, candidates, model_client)
 
@@ -142,13 +173,15 @@ def test_model_client_double_records_every_call_it_receives():
         Candidate(id="bob", resume=Resume(text="Bob's resume")),
     ]
     model_client = RecordingFakeModelClient(
-        responses=[_qualified_response(), _disqualified_response()]
+        responses=[_qualified_response(), _disqualified_response(), _fit_response()]
     )
 
     run_screening(role, candidates, model_client)
 
-    assert len(model_client.calls) == 2
-    assert all(call.response_model is ScreeningResponse for call in model_client.calls)
+    assert len(model_client.calls) == 3
+    assert model_client.calls[0].response_model is ScreeningResponse
+    assert model_client.calls[1].response_model is ScreeningResponse
+    assert model_client.calls[2].response_model is RankingResponse
     assert "Alice's resume" in model_client.calls[0].prompt
     assert "Bob's resume" in model_client.calls[1].prompt
 
@@ -184,17 +217,32 @@ def test_stable_prompt_prefix_is_byte_identical_across_every_call_in_a_run():
         Candidate(id="bob", resume=Resume(text="Bob's resume, five years of Rust.")),
     ]
     model_client = RecordingFakeModelClient(
-        responses=[_qualified_response(), _qualified_response()]
+        responses=[
+            _qualified_response(),
+            _qualified_response(),
+            _fit_response(),
+            _fit_response(),
+        ]
     )
 
     run_screening(role, candidates, model_client)
 
-    prefixes = [call.prompt.split("Resume:\n", 1)[0] for call in model_client.calls]
-    assert len(prefixes) == 2
-    assert prefixes[0] == prefixes[1]
+    screening_calls = [c for c in model_client.calls if c.response_model is ScreeningResponse]
+    ranking_calls = [c for c in model_client.calls if c.response_model is RankingResponse]
+
+    # The stable prefix is per prompt template, not shared across templates:
+    # Screening and Ranking prompts differ by design, but each template's
+    # own prefix must be byte-identical across every candidate in the run.
+    screening_prefixes = [call.prompt.split("Resume:\n", 1)[0] for call in screening_calls]
+    assert len(screening_prefixes) == 2
+    assert screening_prefixes[0] == screening_prefixes[1]
+
+    ranking_prefixes = [call.prompt.split("Redacted Resume:\n", 1)[0] for call in ranking_calls]
+    assert len(ranking_prefixes) == 2
+    assert ranking_prefixes[0] == ranking_prefixes[1]
 
 
-def test_shortlist_preserves_submission_order():
+def test_shortlist_preserves_submission_order_among_equally_fit_qualified_candidates():
     role = _role()
     candidates = [
         Candidate(id="cara", resume=Resume(text="Cara's resume")),
@@ -202,7 +250,14 @@ def test_shortlist_preserves_submission_order():
         Candidate(id="bob", resume=Resume(text="Bob's resume")),
     ]
     model_client = RecordingFakeModelClient(
-        responses=[_qualified_response(), _qualified_response(), _qualified_response()]
+        responses=[
+            _qualified_response(),
+            _qualified_response(),
+            _qualified_response(),
+            _fit_response(),
+            _fit_response(),
+            _fit_response(),
+        ]
     )
 
     shortlist = run_screening(role, candidates, model_client)

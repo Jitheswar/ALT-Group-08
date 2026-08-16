@@ -65,10 +65,33 @@ class RequirementVerdict:
 
 
 @dataclass(frozen=True)
+class FitDimension:
+    name: str
+    rating: str
+    justification: str
+
+
+@dataclass(frozen=True)
+class Fit:
+    """The graded, non-binary judgement of how well a Qualified Candidate
+    suits a Role: one rating per rubric dimension, never a single scalar -
+    a scalar score clusters too tightly across Candidates to rank with.
+    """
+
+    dimensions: tuple[FitDimension, ...]
+
+
+@dataclass(frozen=True)
 class Qualified:
-    """A Candidate who met every Requirement of the Role."""
+    """A Candidate who met every Requirement of the Role. `fit` is attached
+    by Ranking, which runs after Screening, so it starts as None; a
+    Qualified Candidate Ranking failed to judge keeps fit=None rather than
+    being dropped or turned into an Unresolved Candidate - that outcome is
+    reserved for Screening producing no valid verdict.
+    """
 
     verdicts: tuple[RequirementVerdict, ...]
+    fit: Fit | None = None
 
 
 @dataclass(frozen=True)

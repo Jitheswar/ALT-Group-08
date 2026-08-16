@@ -6,7 +6,8 @@ from __future__ import annotations
 from screening.core import build_screening_prompt
 from screening.domain import Candidate, JobDescription, Requirement, RequirementSet, Resume, Role
 from screening.extraction import build_extraction_prompt
-from screening.model_client import ExtractionResponse, ScreeningResponse
+from screening.model_client import ExtractionResponse, RankingResponse, ScreeningResponse
+from screening.ranking import DIMENSIONS, build_ranking_prompt
 from screening.scripted_client import ScriptedModelClient
 
 
@@ -114,3 +115,33 @@ def test_scripted_client_does_not_mistake_a_decimal_number_for_a_numbered_bullet
     response = client.complete(prompt, ExtractionResponse)
 
     assert [r.text for r in response.requirements] == ["Bachelor's degree"]
+
+
+def test_scripted_client_rates_every_ranking_dimension():
+    client = ScriptedModelClient()
+    role = Role(
+        id="role-1",
+        title="Backend Engineer",
+        requirement_set=RequirementSet(requirements=(), approved=True),
+    )
+    prompt = build_ranking_prompt(role, "Built backend services in Python for six years.")
+
+    response = client.complete(prompt, RankingResponse)
+
+    assert {d.dimension for d in response.dimensions} == set(DIMENSIONS)
+    assert all(d.justification for d in response.dimensions)
+
+
+def test_scripted_client_ranking_is_deterministic_given_the_same_prompt():
+    client = ScriptedModelClient()
+    role = Role(
+        id="role-1",
+        title="Backend Engineer",
+        requirement_set=RequirementSet(requirements=(), approved=True),
+    )
+    prompt = build_ranking_prompt(role, "Built backend services in Python for six years.")
+
+    first = client.complete(prompt, RankingResponse)
+    second = client.complete(prompt, RankingResponse)
+
+    assert first == second

@@ -12,6 +12,7 @@ from screening.core import run_screening
 from screening.deepseek_client import DeepSeekModelClient, build_live_transport
 from screening.domain import (
     Candidate,
+    Fit,
     JobDescription,
     Requirement,
     Resume,
@@ -223,10 +224,16 @@ def _load_candidates(resumes_dir: Path) -> list[Candidate]:
 def _describe(outcome: ScreeningOutcome) -> str:
     return match_outcome(
         outcome,
-        qualified=lambda o: "Qualified",
+        qualified=lambda o: f"Qualified (fit: {_describe_fit(o.fit)})",
         disqualified=lambda o: f"Disqualified (missed: {', '.join(r.text for r in o.missed)})",
         unresolved=lambda o: f"Unresolved ({o.reason})",
     )
+
+
+def _describe_fit(fit: Fit | None) -> str:
+    if fit is None:
+        return "unranked"
+    return ", ".join(f"{d.name}={d.rating}" for d in fit.dimensions)
 
 
 if __name__ == "__main__":
