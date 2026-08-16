@@ -54,3 +54,11 @@ class RequirementVerdictResponse(BaseModel):
 
 class ScreeningResponse(BaseModel):
     verdicts: list[RequirementVerdictResponse]
+
+
+class ProposedRequirementResponse(BaseModel):
+    text: str
+
+
+class ExtractionResponse(BaseModel):
+    requirements: list[ProposedRequirementResponse]

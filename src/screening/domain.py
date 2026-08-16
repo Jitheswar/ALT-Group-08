@@ -1,13 +1,20 @@
 """Domain types shared by every seam in the core.
 
-Vocabulary follows CONTEXT.md: Role, Requirement, Requirement Set, Candidate,
-Resume, Screening, Qualified/Unresolved Candidate, Shortlist, Justification.
+Vocabulary follows CONTEXT.md: Role, Job Description, Requirement,
+Requirement Set, Candidate, Resume, Screening, Qualified/Unresolved
+Candidate, Shortlist, Justification.
 """
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Callable, TypeVar
+
+
+@dataclass(frozen=True)
+class JobDescription:
+    text: str
 
 
 @dataclass(frozen=True)
@@ -20,6 +27,16 @@ class Requirement:
 class RequirementSet:
     requirements: tuple[Requirement, ...]
     approved: bool = False
+
+
+def approve_requirement_set(requirements: Sequence[Requirement]) -> RequirementSet:
+    """The single place a Requirement Set becomes approved. Extraction never
+    calls this - it only proposes (screening.extraction.extract_requirements
+    returns a plain tuple of Requirement, never a RequirementSet) - so a
+    Requirement Set can only reach Screening after an explicit Recruiter
+    approval step, per ADR-0004.
+    """
+    return RequirementSet(requirements=tuple(requirements), approved=True)
 
 
 @dataclass(frozen=True)

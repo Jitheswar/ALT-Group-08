@@ -4,8 +4,9 @@ produces - it is a real ModelClient implementation, not a test double."""
 from __future__ import annotations
 
 from screening.core import build_screening_prompt
-from screening.domain import Candidate, Requirement, RequirementSet, Resume, Role
-from screening.model_client import ScreeningResponse
+from screening.domain import Candidate, JobDescription, Requirement, RequirementSet, Resume, Role
+from screening.extraction import build_extraction_prompt
+from screening.model_client import ExtractionResponse, ScreeningResponse
 from screening.scripted_client import ScriptedModelClient
 
 
@@ -74,3 +75,42 @@ def test_scripted_client_ignores_a_resume_line_shaped_like_a_requirement():
 
     [verdict] = response.verdicts
     assert verdict.requirement_id == "req-1"
+
+
+def test_scripted_client_proposes_a_requirement_per_bulleted_line():
+    client = ScriptedModelClient()
+    job_description = JobDescription(
+        text="Backend Engineer\n- 5+ years of Python\n* Bachelor's degree in CS\n"
+    )
+    prompt = build_extraction_prompt(job_description)
+
+    response = client.complete(prompt, ExtractionResponse)
+
+    assert [r.text for r in response.requirements] == [
+        "5+ years of Python",
+        "Bachelor's degree in CS",
+    ]
+
+
+def test_scripted_client_ignores_job_description_lines_without_a_bullet():
+    client = ScriptedModelClient()
+    job_description = JobDescription(
+        text="Backend Engineer\nWe are hiring for a growing team.\n- 5+ years of Python\n"
+    )
+    prompt = build_extraction_prompt(job_description)
+
+    response = client.complete(prompt, ExtractionResponse)
+
+    assert [r.text for r in response.requirements] == ["5+ years of Python"]
+
+
+def test_scripted_client_does_not_mistake_a_decimal_number_for_a_numbered_bullet():
+    client = ScriptedModelClient()
+    job_description = JobDescription(
+        text="Backend Engineer\n3.5+ years of Python experience preferred\n3. Bachelor's degree\n"
+    )
+    prompt = build_extraction_prompt(job_description)
+
+    response = client.complete(prompt, ExtractionResponse)
+
+    assert [r.text for r in response.requirements] == ["Bachelor's degree"]

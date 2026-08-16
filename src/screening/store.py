@@ -1,5 +1,6 @@
-"""Screening Run persistence, behind an interface so flat files can be
-replaced by a database once cross-run queries actually require one.
+"""Screening Run and Requirement Extraction Record persistence, behind
+interfaces so flat files can be replaced by a database once cross-run
+queries actually require one.
 """
 
 from __future__ import annotations
@@ -12,6 +13,9 @@ from pathlib import Path
 from typing import Protocol
 
 from screening.domain import (
+    JobDescription,
+    Requirement,
+    RequirementSet,
     Role,
     ScreeningOutcome,
     Shortlist,
@@ -105,3 +109,92 @@ def _outcome_record(outcome: ScreeningOutcome) -> dict:
         },
         unresolved=lambda o: {"type": "unresolved", "reason": o.reason},
     )
+
+
+@dataclass(frozen=True)
+class RequirementProposalRecord:
+    """What extraction proposed, recorded the moment it is produced - before
+    any Recruiter review - so a proposal the Recruiter goes on to reject
+    outright is still recorded, and extraction quality can be measured on
+    its own rather than only on the proposals that happened to be approved.
+    """
+
+    proposal_id: str
+    job_description: JobDescription
+    proposed: tuple[Requirement, ...]
+    created_at: datetime
+
+
+@dataclass(frozen=True)
+class RequirementApprovalRecord:
+    """What the Recruiter approved, sharing its originating proposal's id so
+    the two can be paired to measure extraction quality against approvals
+    (ADR-0004).
+    """
+
+    proposal_id: str
+    role_id: str
+    approved: RequirementSet
+    created_at: datetime
+
+
+class ExtractionRecordAlreadyExists(Exception):
+    pass
+
+
+class ExtractionRecordStore(Protocol):
+    def save_proposal(self, record: RequirementProposalRecord) -> Path: ...
+    def save_approval(self, record: RequirementApprovalRecord) -> Path: ...
+
+
+class FileExtractionRecordStore:
+    """One append-only JSON file per proposal and per approval. Each file is
+    created exclusively and made read-only once written, mirroring
+    FileRunStore. Proposal and approval files for the same extraction event
+    share their proposal_id, so they can be paired without either one being
+    mutated after the fact.
+    """
+
+    def __init__(self, root: Path) -> None:
+        self._root = root
+        self._root.mkdir(parents=True, exist_ok=True)
+
+    def save_proposal(self, record: RequirementProposalRecord) -> Path:
+        return self._write(
+            self._root / f"{record.proposal_id}-proposal.json",
+            {
+                "proposal_id": record.proposal_id,
+                "created_at": record.created_at.isoformat(),
+                "job_description": asdict(record.job_description),
+                "proposed": [asdict(r) for r in record.proposed],
+            },
+        )
+
+    def save_approval(self, record: RequirementApprovalRecord) -> Path:
+        return self._write(
+            self._root / f"{record.proposal_id}-approval.json",
+            {
+                "proposal_id": record.proposal_id,
+                "role_id": record.role_id,
+                "created_at": record.created_at.isoformat(),
+                "approved": asdict(record.approved),
+            },
+        )
+
+    def _write(self, path: Path, payload: dict) -> Path:
+        try:
+            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        except FileExistsError as exc:
+            raise ExtractionRecordAlreadyExists(
+                f"Requirement Extraction Record already recorded at {path}"
+            ) from exc
+
+        try:
+            with os.fdopen(fd, "w") as fh:
+                fh.write(json.dumps(payload))
+        except BaseException:
+            path.unlink(missing_ok=True)
+            raise
+
+        path.chmod(0o444)
+        return path
