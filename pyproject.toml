@@ -1,0 +1,23 @@
+[project]
+name = "screening"
+version = "0.1.0"
+description = "Resume Screening and Candidate Recommendation"
+requires-python = ">=3.14"
+dependencies = ["pydantic>=2"]
+
+[project.scripts]
+screening = "screening.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.411",
+    "pytest>=8",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
