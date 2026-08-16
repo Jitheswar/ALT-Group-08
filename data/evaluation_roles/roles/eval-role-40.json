@@ -1,0 +1,74 @@
+{
+  "evaluation_role_id": "eval-role-40",
+  "category": "SQL Developer",
+  "role": {
+    "id": "eval-role-40",
+    "title": "SQL Developer",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "4+ years PL/SQL development"
+        },
+        {
+          "id": "req-2",
+          "text": "Enterprise source control experience"
+        },
+        {
+          "id": "req-3",
+          "text": "Database tuning and performance monitoring"
+        },
+        {
+          "id": "req-4",
+          "text": "Data modelling and design"
+        },
+        {
+          "id": "req-5",
+          "text": "Effective written and oral communication"
+        },
+        {
+          "id": "req-6",
+          "text": "PL/SQL"
+        },
+        {
+          "id": "req-7",
+          "text": "Oracle"
+        },
+        {
+          "id": "req-8",
+          "text": "APEX"
+        },
+        {
+          "id": "req-9",
+          "text": "OAP"
+        },
+        {
+          "id": "req-10",
+          "text": "SQL"
+        },
+        {
+          "id": "req-11",
+          "text": "Database tuning"
+        },
+        {
+          "id": "req-12",
+          "text": "Data modelling"
+        },
+        {
+          "id": "req-13",
+          "text": "Version control"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "5520",
+    "title": "Oracle PL/SQL Developer",
+    "company_name": "Version 1",
+    "matched_term": "SQL Developer"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

@@ -43,6 +43,7 @@ from screening.model_client import (
     RequirementVerdictResponse,
     ScreeningResponse,
 )
+from screening.ranking import build_comparative_prompt, build_ranking_prompt
 from screening.ranking import DIMENSIONS
 from tests.fakes import RecordingFakeModelClient, ScoreBasedComparativeFakeModelClient
 
@@ -363,3 +364,15 @@ def test_band_size_is_configurable_via_a_parameter_not_by_touching_ranking_logic
 
     assert [entry.candidate_id for entry in shortlist.entries] == ["a", "b"]
     assert not any(c.response_model is ComparativeResponse for c in model_client.calls)
+
+
+def test_ranking_prompt_mentions_json():
+    # The live provider rejects response_format={"type": "json_object"}
+    # with a 400 unless the prompt itself contains the word "json" - this
+    # is a provider-side requirement, not a style preference, so it is
+    # pinned here rather than left to be rediscovered against the network.
+    assert "json" in build_ranking_prompt(_role(), "anything").lower()
+
+
+def test_comparative_prompt_mentions_json():
+    assert "json" in build_comparative_prompt(_role(), "resume a", "resume b").lower()

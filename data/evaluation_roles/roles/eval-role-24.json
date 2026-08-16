@@ -1,0 +1,74 @@
+{
+  "evaluation_role_id": "eval-role-24",
+  "category": "Electrical Engineering",
+  "role": {
+    "id": "eval-role-24",
+    "title": "Electrical Engineering",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Bachelor's degree in Electrical Engineering"
+        },
+        {
+          "id": "req-2",
+          "text": "5+ years electrical site design or infrastructure engineering experience"
+        },
+        {
+          "id": "req-3",
+          "text": "Experience with commercial/industrial/transportation infrastructure"
+        },
+        {
+          "id": "req-4",
+          "text": "Knowledge of NEC and electrical design standards"
+        },
+        {
+          "id": "req-5",
+          "text": "Proficiency with AutoCAD, AutoCAD Electrical, Revit"
+        },
+        {
+          "id": "req-6",
+          "text": "Ability to travel to project sites"
+        },
+        {
+          "id": "req-7",
+          "text": "Ability to pass government background check"
+        },
+        {
+          "id": "req-8",
+          "text": "Electrical design"
+        },
+        {
+          "id": "req-9",
+          "text": "Power distribution"
+        },
+        {
+          "id": "req-10",
+          "text": "MEP coordination"
+        },
+        {
+          "id": "req-11",
+          "text": "Site surveys"
+        },
+        {
+          "id": "req-12",
+          "text": "Installation support"
+        },
+        {
+          "id": "req-13",
+          "text": "Compliance"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "4380",
+    "title": "Electrical Engineer \u2013 Site Development & Installation",
+    "company_name": "Leidos",
+    "matched_term": "Electrical Engineer"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

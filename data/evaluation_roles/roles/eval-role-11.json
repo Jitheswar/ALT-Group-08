@@ -1,0 +1,82 @@
+{
+  "evaluation_role_id": "eval-role-11",
+  "category": "Blockchain",
+  "role": {
+    "id": "eval-role-11",
+    "title": "Blockchain",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "5+ years blockchain development"
+        },
+        {
+          "id": "req-2",
+          "text": "Experience with Solidity, Rust, JavaScript, Python or Go"
+        },
+        {
+          "id": "req-3",
+          "text": "Smart contract design, deployment and auditing"
+        },
+        {
+          "id": "req-4",
+          "text": "Crypto wallet and payment integration"
+        },
+        {
+          "id": "req-5",
+          "text": "Knowledge of Layer 2 scaling solutions"
+        },
+        {
+          "id": "req-6",
+          "text": "API and backend integration experience"
+        },
+        {
+          "id": "req-7",
+          "text": "Experience in gambling or fintech platforms"
+        },
+        {
+          "id": "req-8",
+          "text": "Blockchain Development"
+        },
+        {
+          "id": "req-9",
+          "text": "Smart Contracts"
+        },
+        {
+          "id": "req-10",
+          "text": "Solidity"
+        },
+        {
+          "id": "req-11",
+          "text": "Rust"
+        },
+        {
+          "id": "req-12",
+          "text": "Crypto Payments"
+        },
+        {
+          "id": "req-13",
+          "text": "Layer 2 Scaling"
+        },
+        {
+          "id": "req-14",
+          "text": "API Integration"
+        },
+        {
+          "id": "req-15",
+          "text": "Security Auditing"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "6301",
+    "title": "Senior blockchain engineer with payment and exchange experience",
+    "company_name": "Travoom",
+    "matched_term": "Blockchain Engineer"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

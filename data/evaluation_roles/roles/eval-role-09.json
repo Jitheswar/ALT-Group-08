@@ -1,0 +1,46 @@
+{
+  "evaluation_role_id": "eval-role-09",
+  "category": "BPO",
+  "role": {
+    "id": "eval-role-09",
+    "title": "BPO",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "High School Diploma/GED"
+        },
+        {
+          "id": "req-2",
+          "text": "Customer Service"
+        },
+        {
+          "id": "req-3",
+          "text": "Call Handling"
+        },
+        {
+          "id": "req-4",
+          "text": "Billing Support"
+        },
+        {
+          "id": "req-5",
+          "text": "Data Entry"
+        },
+        {
+          "id": "req-6",
+          "text": "Problem Solving"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "5780",
+    "title": "Call Center Customer Service Representative",
+    "company_name": "Veolia",
+    "matched_term": "Call Center Customer Service Representative"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

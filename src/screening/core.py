@@ -56,7 +56,11 @@ def build_screening_prompt(role: Role, candidate: Candidate) -> str:
     )
     return (
         "You are screening a Candidate against a Role's Requirement Set.\n"
-        "Return a verdict for every Requirement, citing the supporting text.\n\n"
+        "Return a verdict for every Requirement, citing the supporting text.\n"
+        "Respond with a JSON object of exactly this shape, and no other "
+        "fields:\n"
+        '{"verdicts": [{"requirement_id": "<id>", "met": true or false, '
+        '"justification": "<supporting text>"}, ...]}\n\n'
         f"Role: {role.title}\n\n"
         f"Requirement Set:\n{requirement_lines}\n\n"
         f"Resume:\n{candidate.resume.text}\n"

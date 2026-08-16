@@ -1,0 +1,70 @@
+{
+  "evaluation_role_id": "eval-role-37",
+  "category": "Python Developer",
+  "role": {
+    "id": "eval-role-37",
+    "title": "Python Developer",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "5+ years commercial Python development"
+        },
+        {
+          "id": "req-2",
+          "text": "Proficient Python 3.x and Django"
+        },
+        {
+          "id": "req-3",
+          "text": "Design complex high\u2011load systems"
+        },
+        {
+          "id": "req-4",
+          "text": "Strong design patterns, data structures, algorithms"
+        },
+        {
+          "id": "req-5",
+          "text": "Native or fluent Russian"
+        },
+        {
+          "id": "req-6",
+          "text": "Upper\u2011intermediate English"
+        },
+        {
+          "id": "req-7",
+          "text": "Python"
+        },
+        {
+          "id": "req-8",
+          "text": "Django"
+        },
+        {
+          "id": "req-9",
+          "text": "PostgreSQL"
+        },
+        {
+          "id": "req-10",
+          "text": "MongoDB"
+        },
+        {
+          "id": "req-11",
+          "text": "RabbitMQ"
+        },
+        {
+          "id": "req-12",
+          "text": "Redis"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "25717",
+    "title": "Remote - Middle to Senior Python Developer - (Risks & Compliance)",
+    "company_name": "Betmaster",
+    "matched_term": "Python Developer"
+  },
+  "reviewed_by_human": true,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

@@ -1,0 +1,42 @@
+{
+  "evaluation_role_id": "eval-role-14",
+  "category": "Civil Engineer",
+  "role": {
+    "id": "eval-role-14",
+    "title": "Civil Engineer",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Bachelor's degree in civil engineering"
+        },
+        {
+          "id": "req-2",
+          "text": "Minimum 3 years procurement experience"
+        },
+        {
+          "id": "req-3",
+          "text": "Very good command of English"
+        },
+        {
+          "id": "req-4",
+          "text": "Excellent command of MS Office"
+        },
+        {
+          "id": "req-5",
+          "text": "Good working knowledge of AutoCAD"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "731",
+    "title": "Procurement Civil Engineer",
+    "company_name": "Gek Terna",
+    "matched_term": "Civil Engineer"
+  },
+  "reviewed_by_human": true,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

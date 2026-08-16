@@ -64,7 +64,11 @@ def build_ranking_prompt(role: Role, redacted_resume_text: str) -> str:
     return (
         "You are judging a Qualified Candidate's Fit for a Role.\n"
         "Rate every dimension below as one of minimal, moderate, strong, "
-        "exceptional, citing the supporting text for each rating.\n\n"
+        "exceptional, citing the supporting text for each rating.\n"
+        "Respond with a JSON object of exactly this shape, and no other "
+        "fields:\n"
+        '{"dimensions": [{"dimension": "<name>", "rating": "minimal|moderate'
+        '|strong|exceptional", "justification": "<supporting text>"}, ...]}\n\n'
         f"Role: {role.title}\n\n"
         f"Dimensions:\n{dimension_lines}\n\n"
         f"Redacted Resume:\n{redacted_resume_text}\n"
@@ -82,7 +86,10 @@ def fit_weight(fit: Fit) -> int:
 def build_comparative_prompt(role: Role, resume_a_text: str, resume_b_text: str) -> str:
     return (
         "You are comparing two Qualified Candidates' Fit for a Role.\n"
-        "Decide which Candidate is the stronger overall Fit.\n\n"
+        "Decide which Candidate is the stronger overall Fit.\n"
+        "Respond with a JSON object of exactly this shape, and no other "
+        "fields:\n"
+        '{"winner": "a" or "b"}\n\n'
         f"Role: {role.title}\n\n"
         f"Candidate A:\n{resume_a_text}\n\n"
         f"Candidate B:\n{resume_b_text}\n"

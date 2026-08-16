@@ -1,0 +1,86 @@
+{
+  "evaluation_role_id": "eval-role-39",
+  "category": "SAP Developer",
+  "role": {
+    "id": "eval-role-39",
+    "title": "SAP Developer",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Bachelors in Computer Science"
+        },
+        {
+          "id": "req-2",
+          "text": "5+ years SAP ABAP development"
+        },
+        {
+          "id": "req-3",
+          "text": "Strong SAP ECC experience"
+        },
+        {
+          "id": "req-4",
+          "text": "SAP transport and debug expertise"
+        },
+        {
+          "id": "req-5",
+          "text": "Technical specification authoring"
+        },
+        {
+          "id": "req-6",
+          "text": "Integration design and implementation"
+        },
+        {
+          "id": "req-7",
+          "text": "Vendor partnership and liaison"
+        },
+        {
+          "id": "req-8",
+          "text": "On-call support responsibilities"
+        },
+        {
+          "id": "req-9",
+          "text": "ABAP"
+        },
+        {
+          "id": "req-10",
+          "text": "SAP ECC"
+        },
+        {
+          "id": "req-11",
+          "text": "SAP Transport"
+        },
+        {
+          "id": "req-12",
+          "text": "Integration"
+        },
+        {
+          "id": "req-13",
+          "text": "Debugging"
+        },
+        {
+          "id": "req-14",
+          "text": "COTS Packages"
+        },
+        {
+          "id": "req-15",
+          "text": "Testing"
+        },
+        {
+          "id": "req-16",
+          "text": "Vendor Management"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "3804",
+    "title": "Sr. SAP Developer",
+    "company_name": "L.L.Bean",
+    "matched_term": "SAP Developer"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

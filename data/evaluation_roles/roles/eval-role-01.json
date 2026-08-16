@@ -1,0 +1,58 @@
+{
+  "evaluation_role_id": "eval-role-01",
+  "category": "Accountant",
+  "role": {
+    "id": "eval-role-01",
+    "title": "Accountant",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Bachelor's degree in Accounting"
+        },
+        {
+          "id": "req-2",
+          "text": "3 years accounting experience"
+        },
+        {
+          "id": "req-3",
+          "text": "Payroll processing experience"
+        },
+        {
+          "id": "req-4",
+          "text": "General ledger knowledge"
+        },
+        {
+          "id": "req-5",
+          "text": "Cash handling knowledge"
+        },
+        {
+          "id": "req-6",
+          "text": "Advanced Excel skills"
+        },
+        {
+          "id": "req-7",
+          "text": "Financial reporting"
+        },
+        {
+          "id": "req-8",
+          "text": "Checkbook management"
+        },
+        {
+          "id": "req-9",
+          "text": "Tax filing"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "2078",
+    "title": "Payroll and Staff Accountant",
+    "company_name": "LANDIS COMMUNITIES",
+    "matched_term": "Staff Accountant"
+  },
+  "reviewed_by_human": true,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

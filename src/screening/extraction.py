@@ -18,7 +18,10 @@ def build_extraction_prompt(job_description: JobDescription) -> str:
     return (
         "You are extracting hard Requirements from a Job Description.\n"
         "Return each hard Requirement separately, exactly as it would be "
-        "checked against a Candidate one at a time.\n\n"
+        "checked against a Candidate one at a time.\n"
+        "Respond with a JSON object of exactly this shape, and no other "
+        "fields:\n"
+        '{"requirements": [{"text": "<requirement text>"}, ...]}\n\n'
         f"Job Description:\n{job_description.text}\n"
     )
 

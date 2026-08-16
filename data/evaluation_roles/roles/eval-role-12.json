@@ -1,0 +1,38 @@
+{
+  "evaluation_role_id": "eval-role-12",
+  "category": "Building and Construction",
+  "role": {
+    "id": "eval-role-12",
+    "title": "Building and Construction",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Trade (Boilermaker, Fitter, Electrician) \u2013 12 years experience"
+        },
+        {
+          "id": "req-2",
+          "text": "N6 (National Diploma) \u2013 10 years experience"
+        },
+        {
+          "id": "req-3",
+          "text": "S4 (Higher National Diploma) \u2013 8 years experience"
+        },
+        {
+          "id": "req-4",
+          "text": "B Degree \u2013 6 years experience"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "21112",
+    "title": "Construction Superintendent SMPP",
+    "company_name": "Wood",
+    "matched_term": "Construction Superintendent"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

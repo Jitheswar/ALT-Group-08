@@ -1,0 +1,78 @@
+{
+  "evaluation_role_id": "eval-role-29",
+  "category": "Information Technology",
+  "role": {
+    "id": "eval-role-29",
+    "title": "Information Technology",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Current enrollment or recent graduate in related degree"
+        },
+        {
+          "id": "req-2",
+          "text": "Detail-oriented with excellent organization"
+        },
+        {
+          "id": "req-3",
+          "text": "High sense of urgency"
+        },
+        {
+          "id": "req-4",
+          "text": "Eagerness to take initiative"
+        },
+        {
+          "id": "req-5",
+          "text": "Ability to work independently and in a team"
+        },
+        {
+          "id": "req-6",
+          "text": "Strong problem-solving and analytical skills"
+        },
+        {
+          "id": "req-7",
+          "text": "Basic technical knowledge"
+        },
+        {
+          "id": "req-8",
+          "text": "IT support"
+        },
+        {
+          "id": "req-9",
+          "text": "Software installation"
+        },
+        {
+          "id": "req-10",
+          "text": "Documentation"
+        },
+        {
+          "id": "req-11",
+          "text": "Troubleshooting"
+        },
+        {
+          "id": "req-12",
+          "text": "Project assistance"
+        },
+        {
+          "id": "req-13",
+          "text": "Data analysis"
+        },
+        {
+          "id": "req-14",
+          "text": "Scheduling"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "2838",
+    "title": "Tier 1 IT Support Specialist Intern",
+    "company_name": "Lozier",
+    "matched_term": "IT Support Specialist"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

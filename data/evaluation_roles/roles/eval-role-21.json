@@ -1,0 +1,46 @@
+{
+  "evaluation_role_id": "eval-role-21",
+  "category": "DotNet Developer",
+  "role": {
+    "id": "eval-role-21",
+    "title": "DotNet Developer",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "5+ years C#/.NET development"
+        },
+        {
+          "id": "req-2",
+          "text": "Advanced OOP expertise"
+        },
+        {
+          "id": "req-3",
+          "text": "Strong MS SQL Server experience"
+        },
+        {
+          "id": "req-4",
+          "text": "Proficient with DevOps tools (Gitlab, CI/CD pipelines, containerization)"
+        },
+        {
+          "id": "req-5",
+          "text": "Automated testing experience"
+        },
+        {
+          "id": "req-6",
+          "text": "Applied AI to accelerate coding workflows"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "45092",
+    "title": "Senior C#/.NET Developer in Custody Liquid Finance",
+    "company_name": "Barclays Capital Securities",
+    "matched_term": ".NET Developer"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

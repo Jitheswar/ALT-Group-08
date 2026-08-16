@@ -1,0 +1,50 @@
+{
+  "evaluation_role_id": "eval-role-06",
+  "category": "Arts",
+  "role": {
+    "id": "eval-role-06",
+    "title": "Arts",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "2 years graphic design experience"
+        },
+        {
+          "id": "req-2",
+          "text": "Adobe Creative Cloud (InDesign, Illustrator, Photoshop)"
+        },
+        {
+          "id": "req-3",
+          "text": "Microsoft Office proficiency"
+        },
+        {
+          "id": "req-4",
+          "text": "Project management"
+        },
+        {
+          "id": "req-5",
+          "text": "Brand guideline adherence"
+        },
+        {
+          "id": "req-6",
+          "text": "Cross\u2011functional collaboration"
+        },
+        {
+          "id": "req-7",
+          "text": "Fast\u2011paced deadline management"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "82674",
+    "title": "Production Graphic Artist (Temporary)",
+    "company_name": "Forney Industries",
+    "matched_term": "Graphic Artist"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

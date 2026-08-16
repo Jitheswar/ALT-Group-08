@@ -1,0 +1,58 @@
+{
+  "evaluation_role_id": "eval-role-27",
+  "category": "Health and Fitness",
+  "role": {
+    "id": "eval-role-27",
+    "title": "Health and Fitness",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Nationally recognized personal training certification (NASM, ACE, ACSM, NSCA)"
+        },
+        {
+          "id": "req-2",
+          "text": "CPR, First Aid, and AED certifications"
+        },
+        {
+          "id": "req-3",
+          "text": "At least 1 year personal training experience"
+        },
+        {
+          "id": "req-4",
+          "text": "Flexible availability"
+        },
+        {
+          "id": "req-5",
+          "text": "Fitness Assessment"
+        },
+        {
+          "id": "req-6",
+          "text": "Program Design"
+        },
+        {
+          "id": "req-7",
+          "text": "Group Training"
+        },
+        {
+          "id": "req-8",
+          "text": "Client Retention"
+        },
+        {
+          "id": "req-9",
+          "text": "Sales"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "1994",
+    "title": "Personal Trainer",
+    "company_name": "BETHANY ATHLETIC CLUB LLC",
+    "matched_term": "Personal Trainer"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

@@ -1,0 +1,70 @@
+{
+  "evaluation_role_id": "eval-role-26",
+  "category": "Food and Beverages",
+  "role": {
+    "id": "eval-role-26",
+    "title": "Food and Beverages",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Valid ServSafe Manager certification"
+        },
+        {
+          "id": "req-2",
+          "text": "Valid Louisiana Responsible Vendors License"
+        },
+        {
+          "id": "req-3",
+          "text": "Previous hotel, restaurant and bar experience"
+        },
+        {
+          "id": "req-4",
+          "text": "Ability to work nights, weekends, holidays"
+        },
+        {
+          "id": "req-5",
+          "text": "Leadership"
+        },
+        {
+          "id": "req-6",
+          "text": "Revenue Forecasting"
+        },
+        {
+          "id": "req-7",
+          "text": "Inventory Management"
+        },
+        {
+          "id": "req-8",
+          "text": "Staff Training"
+        },
+        {
+          "id": "req-9",
+          "text": "Event Planning"
+        },
+        {
+          "id": "req-10",
+          "text": "POS Systems"
+        },
+        {
+          "id": "req-11",
+          "text": "Microsoft Office"
+        },
+        {
+          "id": "req-12",
+          "text": "Problem Solving"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "17776",
+    "title": "Food and Beverage Manager",
+    "company_name": "Sonesta Hotels",
+    "matched_term": "Food and Beverage Manager"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

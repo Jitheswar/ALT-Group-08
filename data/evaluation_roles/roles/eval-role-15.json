@@ -1,0 +1,62 @@
+{
+  "evaluation_role_id": "eval-role-15",
+  "category": "Consultant",
+  "role": {
+    "id": "eval-role-15",
+    "title": "Consultant",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Bachelor's degree or equivalent"
+        },
+        {
+          "id": "req-2",
+          "text": "7+ years leading organizational change on enterprise initiatives"
+        },
+        {
+          "id": "req-3",
+          "text": "Experience with integrations, mergers, acquisitions"
+        },
+        {
+          "id": "req-4",
+          "text": "Prosci or CCMP certification"
+        },
+        {
+          "id": "req-5",
+          "text": "Ability to work independently in ambiguous environments"
+        },
+        {
+          "id": "req-6",
+          "text": "Change Management"
+        },
+        {
+          "id": "req-7",
+          "text": "Stakeholder Engagement"
+        },
+        {
+          "id": "req-8",
+          "text": "Communications"
+        },
+        {
+          "id": "req-9",
+          "text": "Training Design"
+        },
+        {
+          "id": "req-10",
+          "text": "Adoption Measurement"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "7589",
+    "title": "Change Management Consultant",
+    "company_name": "Michael Baker International",
+    "matched_term": "Management Consultant"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

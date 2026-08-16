@@ -67,6 +67,16 @@ def test_extraction_prompt_carries_the_job_description_text():
     assert "Rust systems programming" in prompt
 
 
+def test_extraction_prompt_mentions_json():
+    # The live provider rejects response_format={"type": "json_object"}
+    # with a 400 unless the prompt itself contains the word "json" - this
+    # is a provider-side requirement, not a style preference, so it is
+    # pinned here rather than left to be rediscovered against the network.
+    prompt = build_extraction_prompt(JobDescription(text="anything"))
+
+    assert "json" in prompt.lower()
+
+
 def test_a_proposed_requirement_can_be_edited_deleted_or_added_before_approval():
     job_description = JobDescription(text="doesn't matter for this test")
     model_client = RecordingFakeModelClient(

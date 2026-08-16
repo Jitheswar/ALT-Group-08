@@ -1,0 +1,58 @@
+{
+  "evaluation_role_id": "eval-role-23",
+  "category": "Education",
+  "role": {
+    "id": "eval-role-23",
+    "title": "Education",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "NJ Department of Education Special Education certification"
+        },
+        {
+          "id": "req-2",
+          "text": "Content area certification for high school subjects"
+        },
+        {
+          "id": "req-3",
+          "text": "TOH or TOSD certification"
+        },
+        {
+          "id": "req-4",
+          "text": "Special Education"
+        },
+        {
+          "id": "req-5",
+          "text": "Curriculum Planning"
+        },
+        {
+          "id": "req-6",
+          "text": "Student Assessment"
+        },
+        {
+          "id": "req-7",
+          "text": "Collaboration"
+        },
+        {
+          "id": "req-8",
+          "text": "PLC Participation"
+        },
+        {
+          "id": "req-9",
+          "text": "NJ Special Education CE"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "364",
+    "title": "High School Special Education Teacher",
+    "company_name": "Empowerment Academyand Beloved Community Charter Schools",
+    "matched_term": "Teacher"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

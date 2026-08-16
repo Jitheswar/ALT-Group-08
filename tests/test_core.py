@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import pytest
 
-from screening.core import RequirementSetNotApproved, run_screening
+from screening.core import RequirementSetNotApproved, build_screening_prompt, run_screening
 from screening.domain import (
     Candidate,
     Disqualified,
@@ -283,3 +283,15 @@ def test_shortlist_preserves_submission_order_among_equally_fit_qualified_candid
     shortlist = run_screening(role, candidates, model_client, top_band_size=0)
 
     assert [entry.candidate_id for entry in shortlist.entries] == ["cara", "alice", "bob"]
+
+
+def test_screening_prompt_mentions_json():
+    # The live provider rejects response_format={"type": "json_object"}
+    # with a 400 unless the prompt itself contains the word "json" - this
+    # is a provider-side requirement, not a style preference, so it is
+    # pinned here rather than left to be rediscovered against the network.
+    candidate = Candidate(id="c1", resume=Resume(text="anything"))
+
+    prompt = build_screening_prompt(_role(), candidate)
+
+    assert "json" in prompt.lower()

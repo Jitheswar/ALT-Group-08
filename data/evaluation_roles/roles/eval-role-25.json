@@ -1,0 +1,42 @@
+{
+  "evaluation_role_id": "eval-role-25",
+  "category": "Finance",
+  "role": {
+    "id": "eval-role-25",
+    "title": "Finance",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Bachelor's degree in Accounting or Finance"
+        },
+        {
+          "id": "req-2",
+          "text": "1+ years related experience"
+        },
+        {
+          "id": "req-3",
+          "text": "Proficiency in financial modeling and analysis"
+        },
+        {
+          "id": "req-4",
+          "text": "Experience with Hyperion/Oracle PBCS and NetSuite"
+        },
+        {
+          "id": "req-5",
+          "text": "Advanced Excel skills"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "531",
+    "title": "Financial Analyst",
+    "company_name": "Millennium Health",
+    "matched_term": "Financial Analyst"
+  },
+  "reviewed_by_human": true,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

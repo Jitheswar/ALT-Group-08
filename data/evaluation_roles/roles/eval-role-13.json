@@ -1,0 +1,66 @@
+{
+  "evaluation_role_id": "eval-role-13",
+  "category": "Business Analyst",
+  "role": {
+    "id": "eval-role-13",
+    "title": "Business Analyst",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "BS/BA degree"
+        },
+        {
+          "id": "req-2",
+          "text": "6+ years experience"
+        },
+        {
+          "id": "req-3",
+          "text": "2 years SME in Medicaid FFS"
+        },
+        {
+          "id": "req-4",
+          "text": "Business analysis"
+        },
+        {
+          "id": "req-5",
+          "text": "Requirements gathering"
+        },
+        {
+          "id": "req-6",
+          "text": "Process modeling"
+        },
+        {
+          "id": "req-7",
+          "text": "Agile methodology"
+        },
+        {
+          "id": "req-8",
+          "text": "Waterfall methodology"
+        },
+        {
+          "id": "req-9",
+          "text": "Project planning"
+        },
+        {
+          "id": "req-10",
+          "text": "Stakeholder communication"
+        },
+        {
+          "id": "req-11",
+          "text": "Oracle SQL"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "2256",
+    "title": "Business Systems Analyst IV - Medicaid Fee-For-Service",
+    "company_name": "MedImpact Healthcare Systems",
+    "matched_term": "Business Systems Analyst"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

@@ -1,0 +1,70 @@
+{
+  "evaluation_role_id": "eval-role-32",
+  "category": "Mechanical Engineer",
+  "role": {
+    "id": "eval-role-32",
+    "title": "Mechanical Engineer",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Bachelor's Degree in Mechanical Engineering"
+        },
+        {
+          "id": "req-2",
+          "text": "4-7 years experience in mechanical maintenance of large-scale facilities or airports"
+        },
+        {
+          "id": "req-3",
+          "text": "Ability to prepare and implement maintenance SOPs and inspection regimes"
+        },
+        {
+          "id": "req-4",
+          "text": "Fluent in English and Greek (oral and written)"
+        },
+        {
+          "id": "req-5",
+          "text": "HVAC"
+        },
+        {
+          "id": "req-6",
+          "text": "CMMS"
+        },
+        {
+          "id": "req-7",
+          "text": "Preventive Maintenance"
+        },
+        {
+          "id": "req-8",
+          "text": "Root Cause Analysis"
+        },
+        {
+          "id": "req-9",
+          "text": "Asset Handover"
+        },
+        {
+          "id": "req-10",
+          "text": "Inspection Checklists"
+        },
+        {
+          "id": "req-11",
+          "text": "Facility Management"
+        },
+        {
+          "id": "req-12",
+          "text": "Technical Documentation"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "751",
+    "title": "Mechanical Engineer (Maintenance)",
+    "company_name": "Gek Terna",
+    "matched_term": "Mechanical Engineer"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

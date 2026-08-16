@@ -1,0 +1,70 @@
+{
+  "evaluation_role_id": "eval-role-28",
+  "category": "Human Resources",
+  "role": {
+    "id": "eval-role-28",
+    "title": "Human Resources",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "3-5 years HR leadership experience"
+        },
+        {
+          "id": "req-2",
+          "text": "Knowledge of employment laws (FLSA, FMLA, ADA)"
+        },
+        {
+          "id": "req-3",
+          "text": "Bachelor's degree or equivalent"
+        },
+        {
+          "id": "req-4",
+          "text": "Proficiency in Microsoft Office and HR technology"
+        },
+        {
+          "id": "req-5",
+          "text": "Recruiting"
+        },
+        {
+          "id": "req-6",
+          "text": "Compliance"
+        },
+        {
+          "id": "req-7",
+          "text": "Onboarding"
+        },
+        {
+          "id": "req-8",
+          "text": "Employee Relations"
+        },
+        {
+          "id": "req-9",
+          "text": "HRIS"
+        },
+        {
+          "id": "req-10",
+          "text": "Training"
+        },
+        {
+          "id": "req-11",
+          "text": "Safety Programs"
+        },
+        {
+          "id": "req-12",
+          "text": "Microsoft Office"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "661",
+    "title": "Human Resources Manager",
+    "company_name": "Atrium Hospitality",
+    "matched_term": "Human Resources Manager"
+  },
+  "reviewed_by_human": true,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

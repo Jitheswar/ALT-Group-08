@@ -1,0 +1,66 @@
+{
+  "evaluation_role_id": "eval-role-34",
+  "category": "Operations Manager",
+  "role": {
+    "id": "eval-role-34",
+    "title": "Operations Manager",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "4-7 years operations or project management experience"
+        },
+        {
+          "id": "req-2",
+          "text": "Experience managing workflows and scheduling"
+        },
+        {
+          "id": "req-3",
+          "text": "Strong organizational and analytical skills"
+        },
+        {
+          "id": "req-4",
+          "text": "Experience with KPIs and reporting tools"
+        },
+        {
+          "id": "req-5",
+          "text": "Experience using AI tools for reporting or workflow optimization"
+        },
+        {
+          "id": "req-6",
+          "text": "Workflow Management"
+        },
+        {
+          "id": "req-7",
+          "text": "KPI Reporting"
+        },
+        {
+          "id": "req-8",
+          "text": "Process Optimization"
+        },
+        {
+          "id": "req-9",
+          "text": "AI Automation"
+        },
+        {
+          "id": "req-10",
+          "text": "Data Analysis"
+        },
+        {
+          "id": "req-11",
+          "text": "Project Coordination"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "459",
+    "title": "Operations Manager",
+    "company_name": "Usa Vein Clinics",
+    "matched_term": "Operations Manager"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

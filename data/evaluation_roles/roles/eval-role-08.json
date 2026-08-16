@@ -1,0 +1,62 @@
+{
+  "evaluation_role_id": "eval-role-08",
+  "category": "Aviation",
+  "role": {
+    "id": "eval-role-08",
+    "title": "Aviation",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "4+ years corporate flight attendant experience"
+        },
+        {
+          "id": "req-2",
+          "text": "FACT or equivalent training"
+        },
+        {
+          "id": "req-3",
+          "text": "CPR & First Aid certification"
+        },
+        {
+          "id": "req-4",
+          "text": "Cabin service"
+        },
+        {
+          "id": "req-5",
+          "text": "Safety briefing"
+        },
+        {
+          "id": "req-6",
+          "text": "Catering coordination"
+        },
+        {
+          "id": "req-7",
+          "text": "First Aid"
+        },
+        {
+          "id": "req-8",
+          "text": "Communication"
+        },
+        {
+          "id": "req-9",
+          "text": "Travel readiness"
+        },
+        {
+          "id": "req-10",
+          "text": "Software adept"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "53378",
+    "title": "Flight Attendant",
+    "company_name": "USAA",
+    "matched_term": "Flight Attendant"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

@@ -1,0 +1,82 @@
+{
+  "evaluation_role_id": "eval-role-16",
+  "category": "Data Science",
+  "role": {
+    "id": "eval-role-16",
+    "title": "Data Science",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "7+ years data science/marketing analytics"
+        },
+        {
+          "id": "req-2",
+          "text": "3+ years performance marketing measurement"
+        },
+        {
+          "id": "req-3",
+          "text": "AWS cloud platform experience"
+        },
+        {
+          "id": "req-4",
+          "text": "Strong Python and SQL programming"
+        },
+        {
+          "id": "req-5",
+          "text": "Proven MMM development and deployment"
+        },
+        {
+          "id": "req-6",
+          "text": "Design and analysis of incrementality/geo\u2011lift tests"
+        },
+        {
+          "id": "req-7",
+          "text": "Bachelor's degree in quantitative discipline"
+        },
+        {
+          "id": "req-8",
+          "text": "Python"
+        },
+        {
+          "id": "req-9",
+          "text": "SQL"
+        },
+        {
+          "id": "req-10",
+          "text": "Marketing Mix Modeling"
+        },
+        {
+          "id": "req-11",
+          "text": "Incrementality Testing"
+        },
+        {
+          "id": "req-12",
+          "text": "Cloud Data Platform"
+        },
+        {
+          "id": "req-13",
+          "text": "Digital Media Analytics"
+        },
+        {
+          "id": "req-14",
+          "text": "Visualization"
+        },
+        {
+          "id": "req-15",
+          "text": "Causal Inference"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "1817",
+    "title": "Lead Marketing Data Scientist",
+    "company_name": "One Park Financial",
+    "matched_term": "Data Scientist"
+  },
+  "reviewed_by_human": true,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

@@ -1,0 +1,74 @@
+{
+  "evaluation_role_id": "eval-role-03",
+  "category": "Agriculture",
+  "role": {
+    "id": "eval-role-03",
+    "title": "Agriculture",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Degree in Agronomy, Biology, or Plant Science"
+        },
+        {
+          "id": "req-2",
+          "text": "Minimum 4 years seed production and field experimentation experience"
+        },
+        {
+          "id": "req-3",
+          "text": "Project management experience in cross-functional settings"
+        },
+        {
+          "id": "req-4",
+          "text": "Proficiency in MS Office, database management, and statistics"
+        },
+        {
+          "id": "req-5",
+          "text": "Fluent English communication"
+        },
+        {
+          "id": "req-6",
+          "text": "Agronomy"
+        },
+        {
+          "id": "req-7",
+          "text": "Seed Production"
+        },
+        {
+          "id": "req-8",
+          "text": "Field Trials"
+        },
+        {
+          "id": "req-9",
+          "text": "Data Analysis"
+        },
+        {
+          "id": "req-10",
+          "text": "Project Management"
+        },
+        {
+          "id": "req-11",
+          "text": "Statistical Modeling"
+        },
+        {
+          "id": "req-12",
+          "text": "MS Office"
+        },
+        {
+          "id": "req-13",
+          "text": "Stakeholder Communication"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "6622",
+    "title": "SPR Agronomist Coordinator",
+    "company_name": "Syngenta",
+    "matched_term": "Agronomist"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

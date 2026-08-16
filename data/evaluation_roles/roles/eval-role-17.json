@@ -1,0 +1,82 @@
+{
+  "evaluation_role_id": "eval-role-17",
+  "category": "Database",
+  "role": {
+    "id": "eval-role-17",
+    "title": "Database",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "SQL Server"
+        },
+        {
+          "id": "req-2",
+          "text": "Oracle"
+        },
+        {
+          "id": "req-3",
+          "text": "Experience supporting databases in production, testing, and development"
+        },
+        {
+          "id": "req-4",
+          "text": "Backup and storage solution administration"
+        },
+        {
+          "id": "req-5",
+          "text": "Database security and recovery knowledge"
+        },
+        {
+          "id": "req-6",
+          "text": "Strong problem-solving and prioritization skills"
+        },
+        {
+          "id": "req-7",
+          "text": "Ability to work independently with customer-service mindset"
+        },
+        {
+          "id": "req-8",
+          "text": "Database Administration"
+        },
+        {
+          "id": "req-9",
+          "text": "Backup"
+        },
+        {
+          "id": "req-10",
+          "text": "Performance Monitoring"
+        },
+        {
+          "id": "req-11",
+          "text": "Scripting"
+        },
+        {
+          "id": "req-12",
+          "text": "Cloud"
+        },
+        {
+          "id": "req-13",
+          "text": "AWS"
+        },
+        {
+          "id": "req-14",
+          "text": "SQL Server certification"
+        },
+        {
+          "id": "req-15",
+          "text": "Oracle certification"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "6817",
+    "title": "Associate Database Administrator",
+    "company_name": "Exadel Inc (Website)",
+    "matched_term": "Database Administrator"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

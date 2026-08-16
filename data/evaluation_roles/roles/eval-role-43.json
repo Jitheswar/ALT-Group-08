@@ -1,0 +1,78 @@
+{
+  "evaluation_role_id": "eval-role-43",
+  "category": "Web Designing",
+  "role": {
+    "id": "eval-role-43",
+    "title": "Web Designing",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Hbo degree in Web Design or related"
+        },
+        {
+          "id": "req-2",
+          "text": "2+ years web design/management experience"
+        },
+        {
+          "id": "req-3",
+          "text": "CMS experience (WordPress/Drupal)"
+        },
+        {
+          "id": "req-4",
+          "text": "Basic HTML/CSS knowledge"
+        },
+        {
+          "id": "req-5",
+          "text": "Fluent Dutch and English"
+        },
+        {
+          "id": "req-6",
+          "text": "Interest in AI applications"
+        },
+        {
+          "id": "req-7",
+          "text": "Web design"
+        },
+        {
+          "id": "req-8",
+          "text": "CMS management"
+        },
+        {
+          "id": "req-9",
+          "text": "HTML/CSS"
+        },
+        {
+          "id": "req-10",
+          "text": "SEO"
+        },
+        {
+          "id": "req-11",
+          "text": "Accessibility"
+        },
+        {
+          "id": "req-12",
+          "text": "Analytics"
+        },
+        {
+          "id": "req-13",
+          "text": "UX"
+        },
+        {
+          "id": "req-14",
+          "text": "AI awareness"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "11524",
+    "title": "Web designer",
+    "company_name": "KPMG Nederland",
+    "matched_term": "Web Designer"
+  },
+  "reviewed_by_human": true,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

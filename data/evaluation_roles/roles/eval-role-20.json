@@ -1,0 +1,74 @@
+{
+  "evaluation_role_id": "eval-role-20",
+  "category": "Digital Media",
+  "role": {
+    "id": "eval-role-20",
+    "title": "Digital Media",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "7 years B2B social media experience"
+        },
+        {
+          "id": "req-2",
+          "text": "Hands-on employee advocacy program management"
+        },
+        {
+          "id": "req-3",
+          "text": "Proficiency with UTMs, Google Analytics, Oktopost"
+        },
+        {
+          "id": "req-4",
+          "text": "Strong copywriting and brand voice adaptation"
+        },
+        {
+          "id": "req-5",
+          "text": "Experience coordinating social media for large events"
+        },
+        {
+          "id": "req-6",
+          "text": "Social Media Strategy"
+        },
+        {
+          "id": "req-7",
+          "text": "Paid Social Advertising"
+        },
+        {
+          "id": "req-8",
+          "text": "Community Management"
+        },
+        {
+          "id": "req-9",
+          "text": "Analytics & Reporting"
+        },
+        {
+          "id": "req-10",
+          "text": "Employee Advocacy"
+        },
+        {
+          "id": "req-11",
+          "text": "Content Creation"
+        },
+        {
+          "id": "req-12",
+          "text": "UTM Tracking"
+        },
+        {
+          "id": "req-13",
+          "text": "Cross-functional Collaboration"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "4849",
+    "title": "Social Media Manager",
+    "company_name": "Jamf",
+    "matched_term": "Social Media Manager"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

@@ -1,0 +1,62 @@
+{
+  "evaluation_role_id": "eval-role-42",
+  "category": "Testing",
+  "role": {
+    "id": "eval-role-42",
+    "title": "Testing",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "5+ years QA experience"
+        },
+        {
+          "id": "req-2",
+          "text": "Advanced Java programming"
+        },
+        {
+          "id": "req-3",
+          "text": "Java-based test frameworks"
+        },
+        {
+          "id": "req-4",
+          "text": "Selenium WebDriver"
+        },
+        {
+          "id": "req-5",
+          "text": "Azure DevOps or TFS"
+        },
+        {
+          "id": "req-6",
+          "text": "Git/Azure Repos source control"
+        },
+        {
+          "id": "req-7",
+          "text": "Jenkins CI/CD"
+        },
+        {
+          "id": "req-8",
+          "text": "Azure cloud experience"
+        },
+        {
+          "id": "req-9",
+          "text": "Automation Testing"
+        },
+        {
+          "id": "req-10",
+          "text": "Functional Testing"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "18080",
+    "title": "Senior QA Engineer",
+    "company_name": "Rapid Finance",
+    "matched_term": "QA Engineer"
+  },
+  "reviewed_by_human": true,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

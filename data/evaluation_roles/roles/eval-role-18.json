@@ -1,0 +1,58 @@
+{
+  "evaluation_role_id": "eval-role-18",
+  "category": "Designing",
+  "role": {
+    "id": "eval-role-18",
+    "title": "Designing",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "3-4+ years production design experience"
+        },
+        {
+          "id": "req-2",
+          "text": "Advanced Adobe Illustrator"
+        },
+        {
+          "id": "req-3",
+          "text": "Adobe Photoshop expertise"
+        },
+        {
+          "id": "req-4",
+          "text": "Prepare production-ready print files"
+        },
+        {
+          "id": "req-5",
+          "text": "Understanding of bleeds, color modes, resolution"
+        },
+        {
+          "id": "req-6",
+          "text": "High-volume fast-turnaround environment"
+        },
+        {
+          "id": "req-7",
+          "text": "Strong English communication"
+        },
+        {
+          "id": "req-8",
+          "text": "Independent problem-solving"
+        },
+        {
+          "id": "req-9",
+          "text": "Workflow Management"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "595",
+    "title": "Production Graphic Designer",
+    "company_name": "Remote Talent Latam",
+    "matched_term": "Graphic Designer"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

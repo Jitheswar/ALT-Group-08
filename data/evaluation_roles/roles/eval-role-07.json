@@ -1,0 +1,74 @@
+{
+  "evaluation_role_id": "eval-role-07",
+  "category": "Automobile",
+  "role": {
+    "id": "eval-role-07",
+    "title": "Automobile",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Associate degree"
+        },
+        {
+          "id": "req-2",
+          "text": "6-8 years automotive experience"
+        },
+        {
+          "id": "req-3",
+          "text": "ASE Master Certified (all 8)"
+        },
+        {
+          "id": "req-4",
+          "text": "Subaru Master Technician"
+        },
+        {
+          "id": "req-5",
+          "text": "Strong diagnostic skills"
+        },
+        {
+          "id": "req-6",
+          "text": "diagnostics"
+        },
+        {
+          "id": "req-7",
+          "text": "vehicle repair"
+        },
+        {
+          "id": "req-8",
+          "text": "ASE certification"
+        },
+        {
+          "id": "req-9",
+          "text": "Subaru expertise"
+        },
+        {
+          "id": "req-10",
+          "text": "pre\u2011delivery inspection"
+        },
+        {
+          "id": "req-11",
+          "text": "mentorship"
+        },
+        {
+          "id": "req-12",
+          "text": "technical reporting"
+        },
+        {
+          "id": "req-13",
+          "text": "equipment maintenance"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "2632",
+    "title": "Automotive Technician A",
+    "company_name": "Region",
+    "matched_term": "Automotive Technician"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

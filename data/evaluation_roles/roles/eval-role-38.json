@@ -1,0 +1,46 @@
+{
+  "evaluation_role_id": "eval-role-38",
+  "category": "React Developer",
+  "role": {
+    "id": "eval-role-38",
+    "title": "React Developer",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "1 year professional experience with React"
+        },
+        {
+          "id": "req-2",
+          "text": "React"
+        },
+        {
+          "id": "req-3",
+          "text": "UI components"
+        },
+        {
+          "id": "req-4",
+          "text": "REST API"
+        },
+        {
+          "id": "req-5",
+          "text": "Git"
+        },
+        {
+          "id": "req-6",
+          "text": "JavaScript"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "38333",
+    "title": "React Developer Jr.",
+    "company_name": "Flux IT Soft",
+    "matched_term": "React Developer"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

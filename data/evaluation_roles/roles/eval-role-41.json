@@ -1,0 +1,66 @@
+{
+  "evaluation_role_id": "eval-role-41",
+  "category": "Sales",
+  "role": {
+    "id": "eval-role-41",
+    "title": "Sales",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Bachelor's Degree"
+        },
+        {
+          "id": "req-2",
+          "text": "3 years sales experience"
+        },
+        {
+          "id": "req-3",
+          "text": "Government sales knowledge"
+        },
+        {
+          "id": "req-4",
+          "text": "Experience with DoD/federal agencies"
+        },
+        {
+          "id": "req-5",
+          "text": "Valid driver\u2019s license"
+        },
+        {
+          "id": "req-6",
+          "text": "Sales strategy"
+        },
+        {
+          "id": "req-7",
+          "text": "Government contracts"
+        },
+        {
+          "id": "req-8",
+          "text": "CRM"
+        },
+        {
+          "id": "req-9",
+          "text": "ERP"
+        },
+        {
+          "id": "req-10",
+          "text": "Negotiation"
+        },
+        {
+          "id": "req-11",
+          "text": "Travel"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "390",
+    "title": "Sales Representative, State and Local Education",
+    "company_name": "Wearenoble",
+    "matched_term": "Sales Representative"
+  },
+  "reviewed_by_human": true,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

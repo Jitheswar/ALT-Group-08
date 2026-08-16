@@ -1,0 +1,66 @@
+{
+  "evaluation_role_id": "eval-role-36",
+  "category": "Public Relations",
+  "role": {
+    "id": "eval-role-36",
+    "title": "Public Relations",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "Bachelor's Degree"
+        },
+        {
+          "id": "req-2",
+          "text": "4 years journalism experience"
+        },
+        {
+          "id": "req-3",
+          "text": "Valid Class C Texas driver license"
+        },
+        {
+          "id": "req-4",
+          "text": "public relations"
+        },
+        {
+          "id": "req-5",
+          "text": "media relations"
+        },
+        {
+          "id": "req-6",
+          "text": "crisis communications"
+        },
+        {
+          "id": "req-7",
+          "text": "event planning"
+        },
+        {
+          "id": "req-8",
+          "text": "budget management"
+        },
+        {
+          "id": "req-9",
+          "text": "staff supervision"
+        },
+        {
+          "id": "req-10",
+          "text": "bilingual Spanish"
+        },
+        {
+          "id": "req-11",
+          "text": "copywriting"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "39048",
+    "title": "Public Relations Manager",
+    "company_name": "City of San Antonio",
+    "matched_term": "Public Relations Manager"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

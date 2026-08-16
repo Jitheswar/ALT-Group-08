@@ -1,0 +1,46 @@
+{
+  "evaluation_role_id": "eval-role-04",
+  "category": "Apparel",
+  "role": {
+    "id": "eval-role-04",
+    "title": "Apparel",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "3+ years apparel design experience"
+        },
+        {
+          "id": "req-2",
+          "text": "Proficiency in Adobe Creative Suite"
+        },
+        {
+          "id": "req-3",
+          "text": "Experience creating detailed tech packs"
+        },
+        {
+          "id": "req-4",
+          "text": "Strong trend research and forecasting skills"
+        },
+        {
+          "id": "req-5",
+          "text": "Ability to manage global factory relationships"
+        },
+        {
+          "id": "req-6",
+          "text": "Portfolio of boyswear or kidswear designs"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "3616",
+    "title": "Boyswear Apparel Designer - Licensed Brands - 12 Months Fixed Term Contract",
+    "company_name": "Victoria's Secret Fashion Show",
+    "matched_term": "Apparel Designer"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}

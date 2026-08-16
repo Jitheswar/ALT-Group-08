@@ -1,0 +1,62 @@
+{
+  "evaluation_role_id": "eval-role-30",
+  "category": "Java Developer",
+  "role": {
+    "id": "eval-role-30",
+    "title": "Java Developer",
+    "requirement_set": {
+      "requirements": [
+        {
+          "id": "req-1",
+          "text": "5+ years Java development"
+        },
+        {
+          "id": "req-2",
+          "text": "Bachelor's degree Computer Science"
+        },
+        {
+          "id": "req-3",
+          "text": "Proficiency Java"
+        },
+        {
+          "id": "req-4",
+          "text": "Proficiency Vue.js"
+        },
+        {
+          "id": "req-5",
+          "text": "Proficiency Maven"
+        },
+        {
+          "id": "req-6",
+          "text": "Proficiency Spring"
+        },
+        {
+          "id": "req-7",
+          "text": "Proficiency Oracle"
+        },
+        {
+          "id": "req-8",
+          "text": "Proficiency PostgreSQL"
+        },
+        {
+          "id": "req-9",
+          "text": "Bilingual Korean"
+        },
+        {
+          "id": "req-10",
+          "text": "Bilingual English"
+        }
+      ],
+      "approved": true
+    }
+  },
+  "posting": {
+    "source_dataset": "NextGig-Rocks/global-job-postings-multi-ats",
+    "posting_id": "5398",
+    "title": "Java Developer- Bilingual (English/ Korean)",
+    "company_name": "Woongjin",
+    "matched_term": "Java Developer"
+  },
+  "reviewed_by_human": false,
+  "generated_at": "2026-08-16T12:08:50.845260+00:00"
+}
