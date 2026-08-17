@@ -83,6 +83,13 @@ One execution of Screening then Ranking, over one Role and one batch of Resumes.
 The unit of work and the unit of record.
 _Avoid_: Job, Batch, Session, Search
 
+### The demo surface
+
+**Demo Preset**:
+A checked-in pairing of a Job Description with a batch of Resumes, one per Evaluation Role, offered by the web UI to fill its first form in and stage Resumes for its third step.
+Prefilled input and nothing more: extraction, approval and Screening all still run, and every part of it stays editable.
+Never an Evaluation Role - its Job Description is demo prose wrapped around Requirements drawn from one, not a real posting.
+
 ### Evaluation
 
 **Proxy Relevance**:

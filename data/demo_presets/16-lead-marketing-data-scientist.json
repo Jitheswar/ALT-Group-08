@@ -1,0 +1,23 @@
+{
+  "preset_id": "lead-marketing-data-scientist",
+  "label": "Lead Marketing Data Scientist",
+  "family": "Software and Data",
+  "summary": "Two Data Science Resumes against Consultant and Database.",
+  "role_title": "Lead Marketing Data Scientist",
+  "job_description": "One Park Financial is hiring a Lead Marketing Data Scientist to model acquisition performance end to end, from channel attribution through to lifetime value.\n\nWhat we need:\n- 7+ years data science/marketing analytics\n- AWS cloud platform experience\n- Strong Python and SQL programming\n- Proven MMM development and deployment\n- Python\n- SQL\n- Marketing Mix Modeling\n- Incrementality Testing\n- Cloud Data Platform\n- Visualization\n\nThe original posting also asked for the following, which this demo does not gate on: 3+ years performance marketing measurement; Design and analysis of incrementality/geo‑lift tests; Bachelor's degree in quantitative discipline; Digital Media Analytics; Causal Inference.\n",
+  "source_evaluation_role_id": "eval-role-16",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-8478"
+    },
+    {
+      "candidate_id": "resume-atlas-924"
+    },
+    {
+      "candidate_id": "resume-atlas-833"
+    },
+    {
+      "candidate_id": "resume-atlas-8548"
+    }
+  ]
+}

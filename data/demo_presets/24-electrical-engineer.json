@@ -1,0 +1,23 @@
+{
+  "preset_id": "electrical-engineer",
+  "label": "Electrical Engineer",
+  "family": "Engineering and Industry",
+  "summary": "Two Electrical Engineering Resumes against Mechanical Engineer and Arts.",
+  "role_title": "Electrical Engineer",
+  "job_description": "Leidos is hiring an Electrical Engineer for site development and installation work: power distribution design, field surveys and commissioning support.\n\nWhat we need:\n- Bachelor's degree in Electrical Engineering\n- 5+ years electrical site design or infrastructure engineering experience\n- Ability to travel to project sites\n- Electrical design\n\nThe original posting also asked for the following, which this demo does not gate on: Experience with commercial/industrial/transportation infrastructure; Knowledge of NEC and electrical design standards; Proficiency with AutoCAD, AutoCAD Electrical, Revit; Ability to pass government background check; Power distribution; MEP coordination; Site surveys; Installation support; Compliance.\n",
+  "source_evaluation_role_id": "eval-role-24",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-9631"
+    },
+    {
+      "candidate_id": "resume-atlas-9624"
+    },
+    {
+      "candidate_id": "resume-atlas-2017"
+    },
+    {
+      "candidate_id": "resume-atlas-6825"
+    }
+  ]
+}

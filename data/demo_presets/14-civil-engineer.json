@@ -1,0 +1,23 @@
+{
+  "preset_id": "civil-engineer",
+  "label": "Civil Engineer",
+  "family": "Engineering and Industry",
+  "summary": "Two Civil Engineer Resumes against Apparel and Finance.",
+  "role_title": "Civil Engineer",
+  "job_description": "GEK TERNA is hiring a Civil Engineer for its procurement function, reviewing structural designs and quantities on major infrastructure works.\n\nWhat we need:\n- Bachelor's degree in civil engineering\n- Minimum 3 years procurement experience\n- Excellent command of MS Office\n\nThe original posting also asked for the following, which this demo does not gate on: Very good command of English; Good working knowledge of AutoCAD.\n",
+  "source_evaluation_role_id": "eval-role-14",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-8012"
+    },
+    {
+      "candidate_id": "resume-atlas-8025"
+    },
+    {
+      "candidate_id": "resume-atlas-6401"
+    },
+    {
+      "candidate_id": "resume-atlas-10019"
+    }
+  ]
+}

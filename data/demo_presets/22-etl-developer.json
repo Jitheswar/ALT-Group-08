@@ -1,0 +1,23 @@
+{
+  "preset_id": "etl-developer",
+  "label": "ETL Developer",
+  "family": "Software and Data",
+  "summary": "Two ETL Developer Resumes against Finance and Health and Fitness.",
+  "role_title": "ETL Developer",
+  "job_description": "IQVIA is hiring a Big Data ETL Developer to build the pipelines that land clinical and claims data into the warehouse, and to keep them trustworthy.\n\nWhat we need:\n- 5-7 years software development experience\n- 5+ years SQL\n- 2+ years WCF Services\n- 2+ years MVC experience\n\nThe original posting also asked for the following, which this demo does not gate on: Bachelor's Degree in Computer Engineering, Computer Science or related field; 5+ years ASP.NET; 5+ years JQuery; 5+ years CSS; 5+ years JavaScript; 2+ years REST API; Proficiency with VSTS/TFS/JIRA and Confluence.\n",
+  "source_evaluation_role_id": "eval-role-22",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-1408"
+    },
+    {
+      "candidate_id": "resume-atlas-4452"
+    },
+    {
+      "candidate_id": "resume-atlas-10062"
+    },
+    {
+      "candidate_id": "resume-atlas-10208"
+    }
+  ]
+}

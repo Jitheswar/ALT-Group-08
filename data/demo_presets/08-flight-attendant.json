@@ -1,0 +1,23 @@
+{
+  "preset_id": "flight-attendant",
+  "label": "Flight Attendant",
+  "family": "Engineering and Industry",
+  "summary": "Two Aviation Resumes against Building and Construction and Digital Media.",
+  "role_title": "Flight Attendant",
+  "job_description": "We are hiring Flight Attendants for domestic and international routes, responsible for cabin safety first and for the passenger experience second.\n\nWhat we need:\n- 4+ years corporate flight attendant experience\n- FACT or equivalent training\n- Cabin service\n- Safety briefing\n\nThe original posting also asked for the following, which this demo does not gate on: CPR & First Aid certification; Catering coordination; First Aid; Communication; Travel readiness; Software adept.\n",
+  "source_evaluation_role_id": "eval-role-08",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-7094"
+    },
+    {
+      "candidate_id": "resume-atlas-7158"
+    },
+    {
+      "candidate_id": "resume-atlas-7712"
+    },
+    {
+      "candidate_id": "resume-atlas-9144"
+    }
+  ]
+}

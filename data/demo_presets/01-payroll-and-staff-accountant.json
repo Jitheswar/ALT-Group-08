@@ -1,0 +1,23 @@
+{
+  "preset_id": "payroll-and-staff-accountant",
+  "label": "Payroll and Staff Accountant",
+  "family": "Business and Finance",
+  "summary": "Two Accountant Resumes against Banking and Advocate.",
+  "role_title": "Payroll and Staff Accountant",
+  "job_description": "Landis Communities is hiring a Payroll and Staff Accountant to own biweekly payroll and the month-end close for a 900-person organisation. You will report to the Controller and work alongside two staff accountants.\n\nWhat we need:\n- Bachelor's degree in Accounting\n- 3 years accounting experience\n- Payroll processing experience\n- General ledger knowledge\n- Cash handling knowledge\n- Advanced Excel skills\n- Financial reporting\n- Checkbook management\n- Tax filing\n",
+  "source_evaluation_role_id": "eval-role-01",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-5898"
+    },
+    {
+      "candidate_id": "resume-atlas-5783"
+    },
+    {
+      "candidate_id": "resume-atlas-3357"
+    },
+    {
+      "candidate_id": "resume-atlas-6062"
+    }
+  ]
+}

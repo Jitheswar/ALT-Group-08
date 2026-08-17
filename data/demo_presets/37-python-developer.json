@@ -1,0 +1,23 @@
+{
+  "preset_id": "python-developer",
+  "label": "Python Developer",
+  "family": "Software and Data",
+  "summary": "Two Python Developer Resumes against React Developer and Consultant.",
+  "role_title": "Python Developer",
+  "job_description": "Betmaster is looking for a Python Developer to join the risk and compliance team, working on the services that decide what gets flagged for review.\n\nWhat we need:\n- Python\n- Python 3\n- Backend web applications\n- Relational database design\n\nThe original posting also asked for the following, which this demo does not gate on: 5+ years commercial Python development; Proficient Python 3.x and Django; Design complex high‑load systems; Strong design patterns, data structures, algorithms; Native or fluent Russian; Upper‑intermediate English; Django; PostgreSQL; MongoDB; RabbitMQ; Redis.\n",
+  "source_evaluation_role_id": "eval-role-37",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-12177"
+    },
+    {
+      "candidate_id": "resume-atlas-2312"
+    },
+    {
+      "candidate_id": "resume-atlas-12350"
+    },
+    {
+      "candidate_id": "resume-atlas-8223"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "preset_id": "human-resources-manager",
+  "label": "Human Resources Manager",
+  "family": "People, Legal and Education",
+  "summary": "Two Human Resources Resumes against Health and Fitness and Management.",
+  "role_title": "Human Resources Manager",
+  "job_description": "Atrium Hospitality is hiring a Human Resources Manager for a 300-room property, leading recruiting, onboarding and employee relations for a team of 180.\n\nWhat we need:\n- 3-5 years HR leadership experience\n- Bachelor's degree or equivalent\n- Recruiting\n- Onboarding\n- Employee Relations\n- HRIS\n- Training\n- Safety Programs\n\nThe original posting also asked for the following, which this demo does not gate on: Knowledge of employment laws (FLSA, FMLA, ADA); Proficiency in Microsoft Office and HR technology; Compliance; Microsoft Office.\n",
+  "source_evaluation_role_id": "eval-role-28",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-10492"
+    },
+    {
+      "candidate_id": "resume-atlas-4768"
+    },
+    {
+      "candidate_id": "resume-atlas-10196"
+    },
+    {
+      "candidate_id": "resume-atlas-4994"
+    }
+  ]
+}

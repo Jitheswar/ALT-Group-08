@@ -1,0 +1,23 @@
+{
+  "preset_id": "pl-sql-developer",
+  "label": "PL/SQL Developer",
+  "family": "Software and Data",
+  "summary": "Two SQL Developer Resumes against Management and Testing.",
+  "role_title": "PL/SQL Developer",
+  "job_description": "Version 1 is hiring an Oracle PL/SQL Developer to write and tune the stored procedures a high-volume transactional system runs on.\n\nWhat we need:\n- 4+ years PL/SQL development\n- PL/SQL\n- SQL\n- Database tuning\n\nThe original posting also asked for the following, which this demo does not gate on: Enterprise source control experience; Database tuning and performance monitoring; Data modelling and design; Effective written and oral communication; Oracle; APEX; OAP; Data modelling; Version control.\n",
+  "source_evaluation_role_id": "eval-role-40",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-12863"
+    },
+    {
+      "candidate_id": "resume-atlas-2528"
+    },
+    {
+      "candidate_id": "resume-atlas-10958"
+    },
+    {
+      "candidate_id": "resume-atlas-13013"
+    }
+  ]
+}

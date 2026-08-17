@@ -1,0 +1,23 @@
+{
+  "preset_id": "agronomist-coordinator",
+  "label": "Agronomist Coordinator",
+  "family": "Health, Food and Agriculture",
+  "summary": "Two Agriculture Resumes against Architecture and Apparel.",
+  "role_title": "Agronomist Coordinator",
+  "job_description": "Syngenta needs an Agronomist Coordinator for its seed production programme, planning trials across grower sites and reporting on what each field yields.\n\nWhat we need:\n- Fluent English communication\n- Field Trials\n- Data Analysis\n- Project Management\n\nThe original posting also asked for the following, which this demo does not gate on: Degree in Agronomy, Biology, or Plant Science; Minimum 4 years seed production and field experimentation experience; Project management experience in cross-functional settings; Proficiency in MS Office, database management, and statistics; Agronomy; Seed Production; Statistical Modeling; MS Office; Stakeholder Communication.\n",
+  "source_evaluation_role_id": "eval-role-03",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-6178"
+    },
+    {
+      "candidate_id": "resume-atlas-6202"
+    },
+    {
+      "candidate_id": "resume-atlas-3033"
+    },
+    {
+      "candidate_id": "resume-atlas-6249"
+    }
+  ]
+}

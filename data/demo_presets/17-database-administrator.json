@@ -1,0 +1,23 @@
+{
+  "preset_id": "database-administrator",
+  "label": "Database Administrator",
+  "family": "Software and Data",
+  "summary": "Two Database Resumes against Finance and DevOps.",
+  "role_title": "Database Administrator",
+  "job_description": "Exadel is hiring an Associate Database Administrator to keep production databases healthy: backups, tuning, and the migrations that touch them.\n\nWhat we need:\n- SQL Server\n- Backup and storage solution administration\n- Database security and recovery knowledge\n- Database Administration\n- Backup\n- Performance Monitoring\n- Cloud\n- SQL Server certification\n\nThe original posting also asked for the following, which this demo does not gate on: Oracle; Experience supporting databases in production, testing, and development; Strong problem-solving and prioritization skills; Ability to work independently with customer-service mindset; Scripting; AWS; Oracle certification.\n",
+  "source_evaluation_role_id": "eval-role-17",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-996"
+    },
+    {
+      "candidate_id": "resume-atlas-8548"
+    },
+    {
+      "candidate_id": "resume-atlas-10062"
+    },
+    {
+      "candidate_id": "resume-atlas-3987"
+    }
+  ]
+}

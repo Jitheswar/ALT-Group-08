@@ -1,0 +1,23 @@
+{
+  "preset_id": "sap-developer",
+  "label": "SAP Developer",
+  "family": "Software and Data",
+  "summary": "Two SAP Developer Resumes against Human Resources and SQL Developer.",
+  "role_title": "SAP Developer",
+  "job_description": "L.L.Bean is hiring a senior SAP Developer to build and support the ABAP extensions behind its retail and supply-chain processes.\n\nWhat we need:\n- 5+ years SAP ABAP development\n- Strong SAP ECC experience\n- On-call support responsibilities\n- SAP ECC\n- SAP Transport\n- Vendor Management\n\nThe original posting also asked for the following, which this demo does not gate on: Bachelors in Computer Science; SAP transport and debug expertise; Technical specification authoring; Integration design and implementation; Vendor partnership and liaison; ABAP; Integration; Debugging; COTS Packages; Testing.\n",
+  "source_evaluation_role_id": "eval-role-39",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-12755"
+    },
+    {
+      "candidate_id": "resume-atlas-2464"
+    },
+    {
+      "candidate_id": "resume-atlas-1668"
+    },
+    {
+      "candidate_id": "resume-atlas-2528"
+    }
+  ]
+}

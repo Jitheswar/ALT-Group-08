@@ -1,0 +1,23 @@
+{
+  "preset_id": "automotive-technician",
+  "label": "Automotive Technician",
+  "family": "Engineering and Industry",
+  "summary": "Two Automobile Resumes against Aviation and Designing.",
+  "role_title": "Automotive Technician",
+  "job_description": "Our service centre is hiring an Automotive Technician to diagnose and repair customer vehicles across engine, brake and electrical work.\n\nWhat we need:\n- 6-8 years automotive experience\n- Strong diagnostic skills\n- vehicle repair\n- pre‑delivery inspection\n- equipment maintenance\n\nThe original posting also asked for the following, which this demo does not gate on: Associate degree; ASE Master Certified (all 8); Subaru Master Technician; diagnostics; ASE certification; Subaru expertise; mentorship; technical reporting.\n",
+  "source_evaluation_role_id": "eval-role-07",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-3197"
+    },
+    {
+      "candidate_id": "resume-atlas-6891"
+    },
+    {
+      "candidate_id": "resume-atlas-3249"
+    },
+    {
+      "candidate_id": "resume-atlas-999"
+    }
+  ]
+}

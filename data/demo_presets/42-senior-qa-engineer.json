@@ -1,0 +1,23 @@
+{
+  "preset_id": "senior-qa-engineer",
+  "label": "Senior QA Engineer",
+  "family": "Software and Data",
+  "summary": "Two Testing Resumes against Operations Manager and Finance.",
+  "role_title": "Senior QA Engineer",
+  "job_description": "Rapid Finance is hiring a Senior QA Engineer to own the test strategy for a lending platform, automating the coverage that keeps releases boring.\n\nWhat we need:\n- 5+ years QA experience\n- Azure cloud experience\n- Automation Testing\n- Functional Testing\n\nThe original posting also asked for the following, which this demo does not gate on: Advanced Java programming; Java-based test frameworks; Selenium WebDriver; Azure DevOps or TFS; Git/Azure Repos source control; Jenkins CI/CD.\n",
+  "source_evaluation_role_id": "eval-role-42",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-13127"
+    },
+    {
+      "candidate_id": "resume-atlas-13013"
+    },
+    {
+      "candidate_id": "resume-atlas-11588"
+    },
+    {
+      "candidate_id": "resume-atlas-10019"
+    }
+  ]
+}

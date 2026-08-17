@@ -1,0 +1,23 @@
+{
+  "preset_id": "call-center-customer-service-representative",
+  "label": "Call Center Customer Service Representative",
+  "family": "Business and Finance",
+  "summary": "Two BPO Resumes against Architecture and Education.",
+  "role_title": "Call Center Customer Service Representative",
+  "job_description": "Veolia is hiring Call Center Customer Service Representatives to handle inbound billing and service enquiries for utility customers.\n\nWhat we need:\n- High School Diploma/GED\n- Customer Service\n- Call Handling\n- Billing Support\n- Data Entry\n\nThe original posting also asked for the following, which this demo does not gate on: Problem Solving.\n",
+  "source_evaluation_role_id": "eval-role-09",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-3471"
+    },
+    {
+      "candidate_id": "resume-atlas-7534"
+    },
+    {
+      "candidate_id": "resume-atlas-324"
+    },
+    {
+      "candidate_id": "resume-atlas-9429"
+    }
+  ]
+}

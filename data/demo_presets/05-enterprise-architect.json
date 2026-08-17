@@ -1,0 +1,23 @@
+{
+  "preset_id": "enterprise-architect",
+  "label": "Enterprise Architect",
+  "family": "Engineering and Industry",
+  "summary": "Two Architecture Resumes against Arts and Automobile.",
+  "role_title": "Enterprise Architect",
+  "job_description": "AND Digital is looking for an Enterprise Architect to set the target architecture for a multi-year platform programme and keep delivery teams aligned to it.\n\nWhat we need:\n- 8+ years software development or enterprise architecture\n- Stakeholder Communication\n- Leadership\n\nThe original posting also asked for the following, which this demo does not gate on: Experience with AWS, microservices, APIs, event-driven architecture; TOGAF or similar EA frameworks; Strategic Planning; Architecture Governance; Risk Assessment; AWS; Microservices.\n",
+  "source_evaluation_role_id": "eval-role-05",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-325"
+    },
+    {
+      "candidate_id": "resume-atlas-6545"
+    },
+    {
+      "candidate_id": "resume-atlas-6690"
+    },
+    {
+      "candidate_id": "resume-atlas-6987"
+    }
+  ]
+}

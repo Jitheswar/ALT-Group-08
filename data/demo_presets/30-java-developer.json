@@ -1,0 +1,23 @@
+{
+  "preset_id": "java-developer",
+  "label": "Java Developer",
+  "family": "Software and Data",
+  "summary": "Two Java Developer Resumes against Sales and Network Security Engineer.",
+  "role_title": "Java Developer",
+  "job_description": "We are hiring a Java Developer to build and maintain the backend services behind our order platform, working closely with a bilingual product team.\n\nWhat we need:\n- 5+ years Java development\n- Bachelor's degree Computer Science\n- Proficiency Java\n\nThe original posting also asked for the following, which this demo does not gate on: Proficiency Vue.js; Proficiency Maven; Proficiency Spring; Proficiency Oracle; Proficiency PostgreSQL; Bilingual Korean; Bilingual English.\n",
+  "source_evaluation_role_id": "eval-role-30",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-4899"
+    },
+    {
+      "candidate_id": "resume-atlas-10738"
+    },
+    {
+      "candidate_id": "resume-atlas-2415"
+    },
+    {
+      "candidate_id": "resume-atlas-5175"
+    }
+  ]
+}

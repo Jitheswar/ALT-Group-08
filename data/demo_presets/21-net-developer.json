@@ -1,0 +1,23 @@
+{
+  "preset_id": "net-developer",
+  "label": ".NET Developer",
+  "family": "Software and Data",
+  "summary": "Two DotNet Developer Resumes against Management and Finance.",
+  "role_title": ".NET Developer",
+  "job_description": "Barclays is hiring a senior C#/.NET developer for its custody liquid finance platform, working on the services that move and reconcile client positions.\n\nWhat we need:\n- 5+ years C#/.NET development\n- Strong MS SQL Server experience\n- Automated testing experience\n\nThe original posting also asked for the following, which this demo does not gate on: Advanced OOP expertise; Proficient with DevOps tools (Gitlab, CI/CD pipelines, containerization); Applied AI to accelerate coding workflows.\n",
+  "source_evaluation_role_id": "eval-role-21",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-9171"
+    },
+    {
+      "candidate_id": "resume-atlas-9363"
+    },
+    {
+      "candidate_id": "resume-atlas-10972"
+    },
+    {
+      "candidate_id": "resume-atlas-10062"
+    }
+  ]
+}

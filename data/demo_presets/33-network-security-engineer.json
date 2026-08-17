@@ -1,0 +1,23 @@
+{
+  "preset_id": "network-security-engineer",
+  "label": "Network Security Engineer",
+  "family": "Software and Data",
+  "summary": "Two Network Security Engineer Resumes against PMO and Accountant.",
+  "role_title": "Network Security Engineer",
+  "job_description": "We are hiring a senior Network Security Engineer to own firewall and segmentation design, and to lead the response when something reaches the perimeter.\n\nWhat we need:\n- 7+ years network security engineering\n- 5+ years firewall design and administration\n- Palo Alto Networks firewall experience\n- Cloudflare edge security experience\n- AWS or Azure network security experience\n\nThe original posting also asked for the following, which this demo does not gate on: Cisco firewall (FTD/FMC, ASA) experience; RSA SecurID/MFA implementation; Automation/IaC tools (Terraform, Ansible, Python).\n",
+  "source_evaluation_role_id": "eval-role-33",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-5177"
+    },
+    {
+      "candidate_id": "resume-atlas-5175"
+    },
+    {
+      "candidate_id": "resume-atlas-2203"
+    },
+    {
+      "candidate_id": "resume-atlas-5783"
+    }
+  ]
+}

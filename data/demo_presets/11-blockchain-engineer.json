@@ -1,0 +1,23 @@
+{
+  "preset_id": "blockchain-engineer",
+  "label": "Blockchain Engineer",
+  "family": "Software and Data",
+  "summary": "Two Blockchain Resumes against Accountant and Business Analyst.",
+  "role_title": "Blockchain Engineer",
+  "job_description": "Travoom is hiring a senior Blockchain Engineer for its payments and exchange stack, working on settlement flows and the smart contracts behind them.\n\nWhat we need:\n- 5+ years blockchain development\n- Experience with Solidity, Rust, JavaScript, Python or Go\n- Crypto wallet and payment integration\n- Knowledge of Layer 2 scaling solutions\n- Experience in gambling or fintech platforms\n- Blockchain Development\n- Smart Contracts\n- Solidity\n\nThe original posting also asked for the following, which this demo does not gate on: Smart contract design, deployment and auditing; API and backend integration experience; Rust; Crypto Payments; Layer 2 Scaling; API Integration; Security Auditing.\n",
+  "source_evaluation_role_id": "eval-role-11",
+  "resumes": [
+    {
+      "candidate_id": "resume-atlas-3385"
+    },
+    {
+      "candidate_id": "resume-atlas-3397"
+    },
+    {
+      "candidate_id": "resume-atlas-2728"
+    },
+    {
+      "candidate_id": "resume-atlas-7824"
+    }
+  ]
+}
