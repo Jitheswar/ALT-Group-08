@@ -2,11 +2,10 @@
 before it can reach Ranking (ADR-0005) - name, gender markers, graduation
 and birth years, nationality, and photo.
 
-Implemented as rule-based named-entity recognition rather than a model
-call, so the boundary is inexpensive, offline, and testable without a
-provider - a call to the model client here would put identity-bearing text
-in front of the same untrusted inference path Redaction exists to keep it
-away from.
+Implemented as rule-based pattern matching rather than a model call, so the
+boundary is inexpensive, offline, and testable without a provider - a call
+to the model client here would put identity-bearing text in front of the
+same untrusted inference path Redaction exists to keep it away from.
 
 Screening still sees the unredacted Resume: screening.core.build_screening_prompt
 reads candidate.resume.text directly. Only screening.ranking.rank_shortlist
@@ -79,6 +78,53 @@ def _leading_content_lines(text: str, limit: int) -> list[str]:
     return lines
 
 
+_FLATTENED_LEADING_STOPWORDS = {
+    "summary", "professional", "objective", "profile", "resume", "curriculum",
+    "vitae", "education", "training", "activities", "honors", "skills",
+    "skill", "personal", "details", "contact", "career", "experience",
+    "about", "highlights", "core", "accomplishments", "executive",
+}
+_FLATTENED_LEADING_LOOKAHEAD = 8
+
+
+def _looks_like_flattened_name_word(word: str) -> bool:
+    return (
+        word.isalpha() and len(word) >= 2 and word.lower() not in _FLATTENED_LEADING_STOPWORDS
+    )
+
+
+def _flattened_leading_name(text: str) -> str | None:
+    """Tier 4: resume-atlas corpus text arrives as a single line, all
+    lowercase, with no punctuation - none of the line- and capitalisation-
+    based tiers above ever match it, which is why they detected a name on
+    0 of the corpus's Resumes despite working on conventionally formatted
+    ones. The Candidate's name is still conventionally the first thing on
+    the document, sometimes after a short run of section-header words
+    ("summary", "professional profile", ...), so this tier skips those,
+    then takes exactly the next two tokens as the name if both look like
+    name words.
+
+    Capped at two tokens rather than following _NAME_LINE's wider span:
+    without capitalisation to mark where a job title starts, a wider span
+    risks swallowing "tax accountant" or "bank teller" into the name. A
+    three-or-more-word name only has its first two tokens redacted as a
+    result - a partial miss, not the total one this tier replaces.
+    """
+    words = text.split()
+    index = 0
+    while (
+        index < min(len(words), _FLATTENED_LEADING_LOOKAHEAD)
+        and words[index].lower() in _FLATTENED_LEADING_STOPWORDS
+    ):
+        index += 1
+    candidate = words[index : index + 2]
+    if len(candidate) < 2 or not all(_looks_like_flattened_name_word(w) for w in candidate):
+        return None
+    if _looks_like_a_job_title(" ".join(candidate)):
+        return None
+    return " ".join(candidate)
+
+
 def _candidate_name(text: str) -> str | None:
     # Tier 1: a Resume is the Candidate's own account of themselves
     # (CONTEXT.md), and convention puts the name on one of the first
@@ -104,7 +150,18 @@ def _candidate_name(text: str) -> str | None:
     for stripped in _leading_content_lines(text, _NAME_HEADER_LOOKAHEAD):
         if _plausible_name_line(stripped):
             return stripped
-    return None
+
+    # Tier 4: resume-atlas corpus text (evaluated at production scale by
+    # every sweep) has none of the newlines or capitalisation Tiers 1-3
+    # depend on, so they never match it - see _flattened_leading_name.
+    # Gated on the text being entirely lowercase, the one reliable signal
+    # that distinguishes flattened corpus text from ordinary capitalised
+    # prose - without it, this tier would also fire on a bare sentence
+    # like "She led her team...", mistaking two ordinary lowercase words
+    # for a name.
+    if any(c.isupper() for c in text):
+        return None
+    return _flattened_leading_name(text)
 
 
 def _redact_name(text: str) -> str:
@@ -140,21 +197,41 @@ _GRADUATION_KEYWORDS = re.compile(
 _YEAR = re.compile(r"\b(?:18|19|20)\d{2}\b")
 
 
+# A year is redacted only when a birth/graduation keyword falls within this
+# many characters of it - roughly the span of "graduated 2014" or "born
+# 1990" plus a short connector word or punctuation, not a whole section.
+# A per-line scope doesn't hold here: resume-atlas corpus text (evaluated at
+# production scale by every sweep) arrives as one single line, so scoping to
+# "the line" the keyword is on means the whole document, and every year in
+# it - employment history included - would be redacted whenever any
+# graduation/birth keyword appears anywhere. A character-radius window
+# around each keyword match is the unit that survives both a conventionally
+# line-broken Resume and a flattened single-line one.
+_YEAR_CONTEXT_RADIUS = 10
+
+
 def _redact_years(text: str) -> str:
-    """Only years on a line carrying a birth or graduation/degree keyword
-    are redacted - employment-history years are left alone, since the
-    Requirement Set can legitimately depend on them (e.g. years of
-    experience) and the ticket scopes Redaction to graduation and birth
-    years specifically.
+    """Redacts a year only where it sits within _YEAR_CONTEXT_RADIUS
+    characters of a birth or graduation/degree keyword - employment-history
+    years are left alone, since the Requirement Set can legitimately depend
+    on them (e.g. years of experience) and the ticket scopes Redaction to
+    graduation and birth years specifically.
     """
-    lines = text.splitlines()
-    redacted = [
-        _YEAR.sub(_YEAR_PLACEHOLDER, line)
-        if _BIRTH_KEYWORDS.search(line) or _GRADUATION_KEYWORDS.search(line)
-        else line
-        for line in lines
+    keyword_spans = [
+        match.span()
+        for match in (*_BIRTH_KEYWORDS.finditer(text), *_GRADUATION_KEYWORDS.finditer(text))
     ]
-    return "\n".join(redacted)
+
+    def repl(match: re.Match[str]) -> str:
+        year_start, year_end = match.span()
+        near_keyword = any(
+            year_start < keyword_end + _YEAR_CONTEXT_RADIUS
+            and year_end > keyword_start - _YEAR_CONTEXT_RADIUS
+            for keyword_start, keyword_end in keyword_spans
+        )
+        return _YEAR_PLACEHOLDER if near_keyword else match.group(0)
+
+    return _YEAR.sub(repl, text)
 
 
 _NATIONALITIES = (

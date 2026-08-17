@@ -15,6 +15,7 @@ so the retry-and-validation layer here is testable without network access.
 from __future__ import annotations
 
 import json
+import os
 import urllib.request
 from dataclasses import dataclass
 from typing import Protocol
@@ -26,6 +27,7 @@ from screening.model_client import ModelClientError, RunMetrics, T
 MODEL = "deepseek-v4-flash"
 DEFAULT_BASE_URL = "https://api.deepseek.com/v1/chat/completions"
 MAX_ATTEMPTS = 3  # one attempt plus two retries
+API_KEY_ENV_VAR = "DEEPSEEK_API_KEY"
 
 
 @dataclass(frozen=True)
@@ -129,3 +131,26 @@ class DeepSeekModelClient:
 
         assert last_error is not None
         raise last_error
+
+
+class MissingApiKey(Exception):
+    """Raised when `api_key_env_var` is not set but a live DeepSeekModelClient
+    was requested.
+    """
+
+
+def build_deepseek_client(
+    *, usage: str, api_key_env_var: str = API_KEY_ENV_VAR
+) -> DeepSeekModelClient:
+    """Reads `api_key_env_var` from the environment and builds a
+    DeepSeekModelClient over the live transport - the single place every
+    entry point (the CLI, the web demo, and the evaluation scripts)
+    constructs the real provider, so changing provider or env var is one
+    edit. `usage` names what the caller was trying to do (e.g. "to run with
+    --live"), appended to the MissingApiKey message so each caller's error
+    stays specific without duplicating the check.
+    """
+    api_key = os.environ.get(api_key_env_var)
+    if not api_key:
+        raise MissingApiKey(f"{api_key_env_var} must be set {usage}")
+    return DeepSeekModelClient(build_live_transport(api_key))

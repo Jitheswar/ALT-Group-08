@@ -34,7 +34,7 @@ _VALID_PAYLOAD = json.dumps(
 _VALID_RANKING_PAYLOAD = json.dumps(
     {
         "dimensions": [
-            {"dimension": "role_relevance", "rating": "strong", "justification": "Cites Python backend work"},
+            {"dimension": "role_suitability", "rating": "strong", "justification": "Cites Python backend work"},
             {"dimension": "skill_depth", "rating": "moderate", "justification": "Several years listed"},
             {"dimension": "impact_evidence", "rating": "minimal", "justification": "No metrics cited"},
         ]

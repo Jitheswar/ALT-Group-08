@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from screening.pdf_adapter import PdfExtractionError, extract_resume, extract_resume_from_path
+from screening.pdf_adapter import PdfExtractionError, extract_resume
 from tests.pdf_fixtures import encrypted_pdf as _encrypted_pdf
 from tests.pdf_fixtures import minimal_pdf as _minimal_pdf
 
@@ -36,15 +36,6 @@ def test_a_multi_page_pdf_concatenates_its_pages_in_order():
     assert resume.text.index("Experience at Acme Corp") < resume.text.index(
         "Education at State University"
     )
-
-
-def test_extract_resume_from_path_reads_the_file_and_extracts_the_same_text(tmp_path: Path):
-    pdf_path = tmp_path / "resume.pdf"
-    pdf_path.write_bytes(_minimal_pdf("Priya Natarajan, Data Engineer"))
-
-    resume = extract_resume_from_path(pdf_path)
-
-    assert resume.text.strip() == "Priya Natarajan, Data Engineer"
 
 
 def test_unreadable_bytes_raise_clearly_instead_of_yielding_empty_text():

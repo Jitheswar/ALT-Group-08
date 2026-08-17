@@ -20,6 +20,12 @@ redacted or not - is never part of a Ranking or comparative prompt. The
 comparative pass reuses the same redacted text computed for the rubric
 pass, so there remains no code path by which either pass sees an
 unredacted Resume (ADR-0005).
+
+Because the comparative pass sets the final order of the top band, each
+decided comparison is recorded on the returned Shortlist as a Comparison
+with its own justification (ADR-0001) - a tied/failed comparison is not
+recorded separately, since the rubric order it falls back to is already
+citable via the rubric Fit dimensions on that pair.
 """
 
 from __future__ import annotations
@@ -30,6 +36,7 @@ from functools import cmp_to_key
 
 from screening.domain import (
     Candidate,
+    Comparison,
     Fit,
     FitDimension,
     Qualified,
@@ -49,10 +56,10 @@ from screening.redaction import redact_resume
 # Fixed rather than model-chosen, so every Ranking response is checked
 # against a known set - the same discipline Screening applies to
 # Requirement ids.
-DIMENSIONS: tuple[str, ...] = ("role_relevance", "skill_depth", "impact_evidence")
+DIMENSIONS: tuple[str, ...] = ("role_suitability", "skill_depth", "impact_evidence")
 
-_RATING_LEVELS = ("minimal", "moderate", "strong", "exceptional")
-_RATING_WEIGHT = {level: weight for weight, level in enumerate(_RATING_LEVELS)}
+RATING_LEVELS = ("minimal", "moderate", "strong", "exceptional")
+RATING_WEIGHT = {level: weight for weight, level in enumerate(RATING_LEVELS)}
 _DIMENSION_ORDER = {name: index for index, name in enumerate(DIMENSIONS)}
 
 # "Roughly twenty Candidates" per the spec: the top of the Shortlist a
@@ -81,16 +88,17 @@ def fit_weight(fit: Fit) -> int:
     rubric-only ordering, coarser than the comparative pass layered over
     the top band below.
     """
-    return sum(_RATING_WEIGHT[dimension.rating] for dimension in fit.dimensions)
+    return sum(RATING_WEIGHT[dimension.rating] for dimension in fit.dimensions)
 
 
 def build_comparative_prompt(role: Role, resume_a_text: str, resume_b_text: str) -> str:
     return (
         "You are comparing two Qualified Candidates' Fit for a Role.\n"
-        "Decide which Candidate is the stronger overall Fit.\n"
+        "Decide which Candidate is the stronger overall Fit, citing the "
+        "supporting text for your decision.\n"
         "Respond with a JSON object of exactly this shape, and no other "
         "fields:\n"
-        '{"winner": "a" or "b"}\n\n'
+        '{"winner": "a" or "b", "justification": "<supporting text>"}\n\n'
         f"Role: {role.title}\n\n"
         f"Candidate A:\n{resume_a_text}\n\n"
         f"Candidate B:\n{resume_b_text}\n"
@@ -98,7 +106,7 @@ def build_comparative_prompt(role: Role, resume_a_text: str, resume_b_text: str)
 
 
 @dataclass(frozen=True)
-class FitScore:
+class FitJudgement:
     """One Resume's Ranking outcome against a Role: the graded Fit if the
     model produced a usable one, and the Redacted Resume text it was
     judged from - kept alongside the Fit so a caller can compare the
@@ -112,7 +120,7 @@ class FitScore:
     redacted_text: str
 
 
-def score_fit(role: Role, resume: Resume, model_client: ModelClient) -> FitScore:
+def judge_fit(role: Role, resume: Resume, model_client: ModelClient) -> FitJudgement:
     """Redacts `resume` and judges its Fit for `role` - the single place a
     Resume becomes a Fit judgement. Both rank_shortlist (the Ranking
     stage) and screening.counterfactual (measuring how far that judgement
@@ -124,11 +132,11 @@ def score_fit(role: Role, resume: Resume, model_client: ModelClient) -> FitScore
     try:
         response = model_client.complete(prompt, RankingResponse)
     except ModelClientError:
-        return FitScore(fit=None, redacted_text=redacted_resume.text)
+        return FitJudgement(fit=None, redacted_text=redacted_resume.text)
 
     response_names = {d.dimension for d in response.dimensions}
     if response_names != set(DIMENSIONS) or len(response.dimensions) != len(DIMENSIONS):
-        return FitScore(fit=None, redacted_text=redacted_resume.text)
+        return FitJudgement(fit=None, redacted_text=redacted_resume.text)
 
     fit = Fit(
         dimensions=tuple(
@@ -136,7 +144,7 @@ def score_fit(role: Role, resume: Resume, model_client: ModelClient) -> FitScore
             for d in sorted(response.dimensions, key=lambda d: _DIMENSION_ORDER[d.dimension])
         )
     )
-    return FitScore(fit=fit, redacted_text=redacted_resume.text)
+    return FitJudgement(fit=fit, redacted_text=redacted_resume.text)
 
 
 def rank_shortlist(
@@ -165,22 +173,27 @@ def rank_shortlist(
             passthrough.append(entry)
             continue
 
-        scored = score_fit(role, resume_by_id[entry.candidate_id], model_client)
-        if scored.fit is None:
+        judged = judge_fit(role, resume_by_id[entry.candidate_id], model_client)
+        if judged.fit is None:
             unranked.append(entry)
             continue
 
-        ranked_entry = replace(entry, outcome=replace(entry.outcome, fit=scored.fit))
-        ranked.append((ranked_entry, fit_weight(scored.fit)))
-        redacted_text_by_id[entry.candidate_id] = scored.redacted_text
+        ranked_entry = replace(entry, outcome=replace(entry.outcome, fit=judged.fit))
+        ranked.append((ranked_entry, fit_weight(judged.fit)))
+        redacted_text_by_id[entry.candidate_id] = judged.redacted_text
 
     ranked.sort(key=lambda pair: pair[1], reverse=True)
     ranked_entries = [entry for entry, _ in ranked]
 
+    comparisons: list[Comparison] = []
+
     def compare(a: ShortlistEntry, b: ShortlistEntry) -> int:
         """-1 if `a` is the stronger Fit, 1 if `b` is, 0 (a tie) if the
         comparative call failed - `sorted` resolves a tie by keeping the
-        two entries in their current (rubric) relative order.
+        two entries in their current (rubric) relative order, which is
+        already citable via that pair's rubric Fit dimensions. A decided
+        comparison is logged to `comparisons` with its own justification
+        (ADR-0001), since that is what explains the band's final order.
         """
         prompt = build_comparative_prompt(
             role, redacted_text_by_id[a.candidate_id], redacted_text_by_id[b.candidate_id]
@@ -189,11 +202,20 @@ def rank_shortlist(
             response = model_client.complete(prompt, ComparativeResponse)
         except ModelClientError:
             return 0
+        winner, loser = (a, b) if response.winner == "a" else (b, a)
+        comparisons.append(
+            Comparison(
+                winner_id=winner.candidate_id,
+                loser_id=loser.candidate_id,
+                justification=response.justification,
+            )
+        )
         return -1 if response.winner == "a" else 1
 
     band = sorted(ranked_entries[:top_band_size], key=cmp_to_key(compare))
     tail = ranked_entries[top_band_size:]
 
     return Shortlist(
-        entries=tuple(band) + tuple(tail) + tuple(unranked) + tuple(passthrough)
+        entries=tuple(band) + tuple(tail) + tuple(unranked) + tuple(passthrough),
+        comparisons=tuple(comparisons),
     )

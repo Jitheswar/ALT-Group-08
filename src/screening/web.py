@@ -6,6 +6,10 @@ screening.core.run_screening - and adds nothing beyond them: no reject
 action, no threshold or cutoff control, and no view that hides a Candidate
 from the Recruiter, per ADR-0001.
 
+A completed Screening Run is recorded via FileRunStore exactly as the CLI
+records one (spec:56, spec:150), so a Recruiter using this demo surface
+gets the same durable record, not a UI-only view of it.
+
 The Recruiter moves through four steps - supply a Job Description, review
 and approve the proposed Requirements, upload Resumes, read the Shortlist -
 each its own page. State travels between them in hidden form fields rather
@@ -18,22 +22,27 @@ from __future__ import annotations
 
 import json
 from collections.abc import Sequence
-from pathlib import PurePath
+from dataclasses import replace
+from datetime import datetime, timezone
+from pathlib import Path, PurePath
 from typing import NamedTuple
 from uuid import uuid4
 
 from flask import Flask, request
 from markupsafe import Markup, escape
-from werkzeug.datastructures import FileStorage
+from werkzeug.datastructures import FileStorage, MultiDict
 
 from screening.core import run_screening
 from screening.domain import (
     Candidate,
+    Disqualified,
     Fit,
     JobDescription,
+    Qualified,
     Requirement,
     Role,
     Shortlist,
+    ShortlistEntry,
     ScreeningOutcome,
     approve_requirement_set,
     match_outcome,
@@ -41,10 +50,19 @@ from screening.domain import (
 from screening.extraction import extract_requirements
 from screening.model_client import ModelClient, ModelClientError
 from screening.pdf_adapter import PdfExtractionError, extract_resume
+from screening.store import FileRunStore, ScreeningRun
+
+DEFAULT_RUNS_DIR = Path("runs")
 
 
-def create_app(model_client: ModelClient) -> Flask:
+def create_app(model_client: ModelClient, *, runs_dir: Path = DEFAULT_RUNS_DIR) -> Flask:
+    """`runs_dir` is where completed Screening Runs are recorded (spec:56,
+    spec:150) - the same durable, append-only record the CLI writes via
+    FileRunStore, so a Recruiter using this demo surface can revisit how a
+    decision was reached weeks later, not just read the Shortlist once.
+    """
     app = Flask(__name__)
+    run_store = FileRunStore(runs_dir)
 
     @app.get("/")
     def role_form() -> str:
@@ -130,6 +148,17 @@ def create_app(model_client: ModelClient) -> Flask:
             id=str(uuid4()), title=title, requirement_set=approve_requirement_set(requirements)
         )
         shortlist = run_screening(role, candidates, model_client)
+
+        run_store.save(
+            ScreeningRun(
+                run_id=str(uuid4()),
+                role=role,
+                shortlist=shortlist,
+                created_at=datetime.now(timezone.utc),
+                metrics=replace(model_client.metrics),
+            )
+        )
+
         return _shortlist_page(title=title, shortlist=shortlist, unreadable=unreadable)
 
     return app
@@ -208,7 +237,7 @@ def _review_row_html(row: _ReviewRow) -> Markup:
     ).format(row.id, row.id, checked, row.id, row.text)
 
 
-def _rows_from_review_form(form) -> list[_ReviewRow]:
+def _rows_from_review_form(form: MultiDict[str, str]) -> list[_ReviewRow]:
     return [
         _ReviewRow(
             id=req_id,
@@ -237,9 +266,14 @@ def _approved_requirements(
 # --- Step 3: upload Resumes -------------------------------------------------
 
 
+class UnreadableUpload(NamedTuple):
+    filename: str
+    error: str
+
+
 def _candidates_from_uploads(
     uploads: Sequence[FileStorage],
-) -> tuple[list[Candidate], list[tuple[str, str]]]:
+) -> tuple[list[Candidate], list[UnreadableUpload]]:
     """Converts uploaded PDFs into Candidates through the adapter. Candidate
     ids are disambiguated on a filename collision - two Resumes uploaded as
     e.g. "resume.pdf" would otherwise collide in ranking.py's
@@ -247,7 +281,7 @@ def _candidates_from_uploads(
     the other's Resume text.
     """
     candidates: list[Candidate] = []
-    unreadable: list[tuple[str, str]] = []
+    unreadable: list[UnreadableUpload] = []
     seen_ids: set[str] = set()
     for uploaded in uploads:
         if not uploaded.filename:
@@ -255,7 +289,7 @@ def _candidates_from_uploads(
         try:
             resume = extract_resume(uploaded.read())
         except PdfExtractionError as exc:
-            unreadable.append((uploaded.filename, str(exc)))
+            unreadable.append(UnreadableUpload(uploaded.filename, str(exc)))
             continue
         candidate_id = _unique_candidate_id(PurePath(uploaded.filename).stem, seen_ids)
         seen_ids.add(candidate_id)
@@ -272,10 +306,10 @@ def _unique_candidate_id(stem: str, seen: set[str]) -> str:
     return f"{stem}-{suffix}"
 
 
-def _no_candidates_error(unreadable: Sequence[tuple[str, str]]) -> str:
+def _no_candidates_error(unreadable: Sequence[UnreadableUpload]) -> str:
     if not unreadable:
         return "No Resume files were uploaded."
-    listed = "; ".join(f"{name} ({message})" for name, message in unreadable)
+    listed = "; ".join(f"{u.filename} ({u.error})" for u in unreadable)
     return f"No Resume could be read: {listed}"
 
 
@@ -311,10 +345,11 @@ def _requirements_from_json(raw: str) -> tuple[Requirement, ...]:
 
 
 def _shortlist_page(
-    *, title: str, shortlist: Shortlist, unreadable: Sequence[tuple[str, str]]
+    *, title: str, shortlist: Shortlist, unreadable: Sequence[UnreadableUpload]
 ) -> str:
     unreadable_html = _unreadable_html(unreadable)
     rows_html = Markup("").join(_shortlist_row_html(entry) for entry in shortlist.entries)
+    comparisons_html = _comparisons_html(shortlist.comparisons)
     body = f"""
     <h2>{escape(title)} - Shortlist</h2>
     <p>Every Candidate submitted appears below, whatever Screening found -
@@ -326,23 +361,39 @@ def _shortlist_page(
         {rows_html}
       </tbody>
     </table>
+    {comparisons_html}
     <p><a href="/">Start a new Role</a></p>
     """
     return _layout("Shortlist", body)
 
 
-def _unreadable_html(unreadable: Sequence[tuple[str, str]]) -> Markup:
+def _comparisons_html(comparisons: Sequence) -> Markup:
+    if not comparisons:
+        return Markup("")
+    items = Markup("").join(
+        Markup("<li><strong>{}</strong> over {}: {}</li>").format(
+            c.winner_id, c.loser_id, c.justification
+        )
+        for c in comparisons
+    )
+    return Markup(
+        '<section class="comparisons"><h3>How the top of the Shortlist was ordered</h3>'
+        "<ul>{}</ul></section>"
+    ).format(items)
+
+
+def _unreadable_html(unreadable: Sequence[UnreadableUpload]) -> Markup:
     if not unreadable:
         return Markup("")
     items = Markup("").join(
-        Markup("<li>{} - {}</li>").format(name, message) for name, message in unreadable
+        Markup("<li>{} - {}</li>").format(u.filename, u.error) for u in unreadable
     )
     return Markup(
         '<section class="unreadable"><h3>Could not be read</h3><ul>{}</ul></section>'
     ).format(items)
 
 
-def _shortlist_row_html(entry) -> Markup:
+def _shortlist_row_html(entry: ShortlistEntry) -> Markup:
     status = _status_label(entry.outcome)
     return Markup('<tr class="{}"><td>{}</td><td>{}</td><td>{}</td></tr>').format(
         status.lower(), entry.candidate_id, status, _outcome_detail(entry.outcome)
@@ -367,7 +418,7 @@ def _outcome_detail(outcome: ScreeningOutcome) -> Markup:
     )
 
 
-def _qualified_detail(outcome) -> Markup:
+def _qualified_detail(outcome: Qualified) -> Markup:
     fit: Fit | None = outcome.fit
     if fit is None:
         return Markup("<em>Qualified, but Ranking produced no verdict.</em>")
@@ -380,7 +431,7 @@ def _qualified_detail(outcome) -> Markup:
     return Markup("<ul>{}</ul>").format(items)
 
 
-def _disqualified_detail(outcome) -> Markup:
+def _disqualified_detail(outcome: Disqualified) -> Markup:
     justification_by_id = {v.requirement_id: v.justification for v in outcome.verdicts}
     items = Markup("").join(
         Markup("<li>Missed <strong>{}</strong>: {}</li>").format(
@@ -437,8 +488,8 @@ def _layout(page_title: str, body_html: str) -> str:
 
 # --- Standalone entry point --------------------------------------------------
 
-API_KEY_ENV_VAR = "DEEPSEEK_API_KEY"
 LIVE_ENV_VAR = "SCREENING_WEB_LIVE"
+RUNS_DIR_ENV_VAR = "SCREENING_RUNS_DIR"
 
 
 def main() -> int:
@@ -450,20 +501,21 @@ def main() -> int:
     import os
     import sys
 
-    from screening.deepseek_client import DeepSeekModelClient, build_live_transport
+    from screening.deepseek_client import MissingApiKey, build_deepseek_client
     from screening.scripted_client import ScriptedModelClient
 
     model_client: ModelClient
     if os.environ.get(LIVE_ENV_VAR) == "1":
-        api_key = os.environ.get(API_KEY_ENV_VAR)
-        if not api_key:
-            print(f"error: {API_KEY_ENV_VAR} must be set to run with {LIVE_ENV_VAR}=1", file=sys.stderr)
+        try:
+            model_client = build_deepseek_client(usage=f"to run with {LIVE_ENV_VAR}=1")
+        except MissingApiKey as exc:
+            print(f"error: {exc}", file=sys.stderr)
             return 1
-        model_client = DeepSeekModelClient(build_live_transport(api_key))
     else:
         model_client = ScriptedModelClient()
 
-    app = create_app(model_client)
+    runs_dir = Path(os.environ[RUNS_DIR_ENV_VAR]) if RUNS_DIR_ENV_VAR in os.environ else DEFAULT_RUNS_DIR
+    app = create_app(model_client, runs_dir=runs_dir)
     app.run(port=int(os.environ.get("PORT", "5000")))
     return 0
 

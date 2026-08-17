@@ -20,6 +20,13 @@ from screening.domain import (
 from screening.model_client import ModelClient, ModelClientError, ScreeningResponse
 from screening.ranking import DEFAULT_TOP_BAND_SIZE, rank_shortlist
 
+# One attempt plus two retries, mirroring ADR-0007's retry-twice-then-fail-
+# loudly policy. A response that fails schema validation is already retried
+# inside the ModelClient itself; this budget is for a response that *passes*
+# validation but doesn't cover the Requirement Set it was asked about - a
+# failure mode the ModelClient has no way to see, so core.py retries it.
+_MAX_SCREENING_ATTEMPTS = 3
+
 
 class RequirementSetNotApproved(Exception):
     pass
@@ -71,14 +78,18 @@ def _screen_candidate(
     role: Role, candidate: Candidate, model_client: ModelClient
 ) -> ScreeningOutcome:
     prompt = build_screening_prompt(role, candidate)
-    try:
-        response = model_client.complete(prompt, ScreeningResponse)
-    except ModelClientError:
-        return Unresolved(reason="Screening produced no valid verdict")
-
     requirement_ids = [req.id for req in role.requirement_set.requirements]
-    response_ids = [v.requirement_id for v in response.verdicts]
-    if sorted(response_ids) != sorted(requirement_ids):
+
+    for _ in range(_MAX_SCREENING_ATTEMPTS):
+        try:
+            response = model_client.complete(prompt, ScreeningResponse)
+        except ModelClientError:
+            return Unresolved(reason="Screening produced no valid verdict")
+
+        response_ids = [v.requirement_id for v in response.verdicts]
+        if sorted(response_ids) == sorted(requirement_ids):
+            break
+    else:
         return Unresolved(
             reason="Screening response did not cover every Requirement exactly once"
         )

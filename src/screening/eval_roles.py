@@ -22,7 +22,6 @@ harness (ticket 07) rather than by the core, which only ever sees a Role.
 from __future__ import annotations
 
 import json
-import os
 from collections.abc import Sequence
 from dataclasses import asdict, dataclass
 from datetime import datetime
@@ -30,6 +29,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from screening.domain import Requirement, RequirementSet, Role
+from screening.fileio import write_once
 
 
 @dataclass(frozen=True)
@@ -158,13 +158,17 @@ CATEGORY_SEARCH_TERMS: dict[str, tuple[str, ...]] = {
 
 
 @lru_cache(maxsize=None)
-def _haystack(posting: PostingCandidate) -> str:
-    """Cached per posting: match_all_categories scores every posting once
-    per category, and a real postings corpus is large enough (six figures
-    of rows) that re-lower-casing the same title on every one of those
-    passes is wasted work worth avoiding.
+def _haystack(title: str, normalized_title: str) -> str:
+    """Cached per (title, normalized_title): match_all_categories scores
+    every posting once per category, and a real postings corpus is large
+    enough (six figures of rows) that re-lower-casing the same title on
+    every one of those passes is wasted work worth avoiding. Keyed on just
+    the two fields the haystack is built from, not the whole PostingCandidate
+    - keying on the dataclass itself would hash every other field too
+    (job_description included) on every lookup, and pin every posting's full
+    row in memory for the cache's lifetime.
     """
-    return f"{posting.title} {posting.normalized_title}".lower()
+    return f"{title} {normalized_title}".lower()
 
 
 def score_posting(category: str, posting: PostingCandidate) -> tuple[int, str] | None:
@@ -174,7 +178,7 @@ def score_posting(category: str, posting: PostingCandidate) -> tuple[int, str] |
     plain max().
     """
     terms = CATEGORY_SEARCH_TERMS[category]
-    haystack = _haystack(posting)
+    haystack = _haystack(posting.title, posting.normalized_title)
     for index, term in enumerate(terms):
         if term.lower() in haystack:
             return len(terms) - index, term
@@ -293,15 +297,7 @@ def write_evaluation_role(evaluation_role: EvaluationRole, root: Path) -> Path:
         "generated_at": evaluation_role.generated_at.isoformat(),
     }
 
-    fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
-    try:
-        with os.fdopen(fd, "w") as fh:
-            fh.write(json.dumps(payload, indent=2) + "\n")
-    except BaseException:
-        path.unlink(missing_ok=True)
-        raise
-    path.chmod(0o444)
-    return path
+    return write_once(path, lambda fh: fh.write(json.dumps(payload, indent=2) + "\n"))
 
 
 def read_evaluation_role(path: Path) -> EvaluationRole:
@@ -334,3 +330,31 @@ def read_evaluation_roles(root: Path) -> list[EvaluationRole]:
     """Every checked-in Evaluation Role under `root`, in filename order -
     the read side the evaluation harness (ticket 07) consumes."""
     return [read_evaluation_role(path) for path in sorted(root.glob("*.json"))]
+
+
+@dataclass(frozen=True)
+class EvaluationRolesMetadata:
+    """scripts/generate_evaluation_roles.py finalize's checked-in summary of
+    the whole set - in particular `reviewed_sample_size`, the number of the
+    `total_evaluation_roles` a human actually reviewed (ADR-0008). A reader
+    of the sweep's rank metrics needs this figure alongside them to know how
+    much of the extraction pipeline they're actually trusting, not just the
+    number in isolation.
+    """
+
+    total_evaluation_roles: int
+    reviewed_sample_size: int
+    source_resume_corpus: str
+    source_postings_corpus: str
+    generated_at: datetime
+
+
+def read_evaluation_roles_metadata(path: Path) -> EvaluationRolesMetadata:
+    data = json.loads(path.read_text())
+    return EvaluationRolesMetadata(
+        total_evaluation_roles=data["total_evaluation_roles"],
+        reviewed_sample_size=data["reviewed_sample_size"],
+        source_resume_corpus=data["source_resume_corpus"],
+        source_postings_corpus=data["source_postings_corpus"],
+        generated_at=datetime.fromisoformat(data["generated_at"]),
+    )

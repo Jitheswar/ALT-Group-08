@@ -1,11 +1,11 @@
 """Counterfactual Sensitivity (ticket 09, ADR-0005): alters exactly one
 identity signal in a Resume, holds everything else constant, and measures
-how far the resulting Fit judgement moves when both variants are scored
-through screening.ranking.score_fit - the exact function real Ranking
+how far the resulting Fit judgement moves when both variants are judged
+through screening.ranking.judge_fit - the exact function real Ranking
 calls go through, not a re-implementation of it.
 
 Because both variants are redacted by the same redact_resume call
-score_fit always makes, this doubles as the check ADR-0005 asks for on
+judge_fit always makes, this doubles as the check ADR-0005 asks for on
 whether Redaction is leaking: if Redaction is doing its job, altering an
 identity signal upstream of it should leave the pair's Redacted Resume
 identical, and any Fit movement is then evidence of the model inferring
@@ -22,14 +22,14 @@ threshold - there is no pass/fail anywhere here, only a measurement.
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
 from screening.domain import Resume, Role
 from screening.eval_roles import EvaluationRole
 from screening.model_client import ModelClient
 from screening.proxy_relevance import CorpusResume, construct_proxy_relevance
-from screening.ranking import fit_weight, score_fit
+from screening.ranking import fit_weight, judge_fit
 from screening.redaction import detect_candidate_name, detect_nationality
 
 # A deliberately diverse pool, not tied to any one axis of identity - a
@@ -85,6 +85,23 @@ def _pick_alternate(current: str, pool: Sequence[str]) -> str:
     raise ValueError(f"no alternate in {pool!r} distinct from {current!r}")
 
 
+def _match_source_case(source: str, target: str) -> str:
+    """Matches `target`'s case to `source`'s. resume-atlas corpus text is
+    entirely lowercase, with no capitalisation to mark a name - exactly the
+    signal screening.redaction._candidate_name's Tier 4 keys off to detect
+    it there. Substituting a Title Case alternate (e.g. "Emily Carter" from
+    _ALTERNATE_NAMES) into that lowercase text would flip the altered
+    Resume out of Tier 4's lowercase gate, so Redaction would strip the
+    original's name but not the altered one's - a case difference alone
+    manufacturing a Redaction "leak" that was never a token leak at all.
+    """
+    if source.islower():
+        return target.lower()
+    if source.isupper():
+        return target.upper()
+    return target
+
+
 def _exact_token_sub(text: str, value: str, replacement: str) -> str:
     """Substitutes every occurrence of the exact string `value`, not
     occurrences of its individual words - mirrors
@@ -109,33 +126,39 @@ class CounterfactualPair:
     altered_value: str
 
 
-def _name_pair(resume: Resume) -> CounterfactualPair | None:
-    name = detect_candidate_name(resume.text)
-    if not name:
+def _detected_value_pair(
+    resume: Resume,
+    *,
+    signal: str,
+    detect: Callable[[str], str | None],
+    pool: Sequence[str],
+) -> CounterfactualPair | None:
+    """Shared by `_name_pair` and `_nationality_pair`, which differ only in
+    which signal they detect and which alternate pool they swap in from.
+    """
+    value = detect(resume.text)
+    if not value:
         return None
-    alternate = _pick_alternate(name, _ALTERNATE_NAMES)
-    altered_text = _exact_token_sub(resume.text, name, alternate)
+    alternate = _match_source_case(value, _pick_alternate(value, pool))
+    altered_text = _exact_token_sub(resume.text, value, alternate)
     return CounterfactualPair(
-        signal="name",
+        signal=signal,
         original=resume,
         altered=Resume(text=altered_text),
-        original_value=name,
+        original_value=value,
         altered_value=alternate,
     )
 
 
+def _name_pair(resume: Resume) -> CounterfactualPair | None:
+    return _detected_value_pair(
+        resume, signal="name", detect=detect_candidate_name, pool=_ALTERNATE_NAMES
+    )
+
+
 def _nationality_pair(resume: Resume) -> CounterfactualPair | None:
-    nationality = detect_nationality(resume.text)
-    if not nationality:
-        return None
-    alternate = _pick_alternate(nationality, _ALTERNATE_NATIONALITIES)
-    altered_text = _exact_token_sub(resume.text, nationality, alternate)
-    return CounterfactualPair(
-        signal="nationality",
-        original=resume,
-        altered=Resume(text=altered_text),
-        original_value=nationality,
-        altered_value=alternate,
+    return _detected_value_pair(
+        resume, signal="nationality", detect=detect_nationality, pool=_ALTERNATE_NATIONALITIES
     )
 
 
@@ -206,15 +229,15 @@ def measure_counterfactual_pair(
     pair: CounterfactualPair,
     model_client: ModelClient,
 ) -> CounterfactualMeasurement:
-    """Scores both sides of `pair` through screening.ranking.score_fit -
+    """Judges both sides of `pair` through screening.ranking.judge_fit -
     the same redact-then-rank path every real Ranking call goes through -
     and measures how far the resulting Fit judgement moved.
     """
-    original_score = score_fit(role, pair.original, model_client)
-    altered_score = score_fit(role, pair.altered, model_client)
-    leaked = redaction_leaked(original_score.redacted_text, altered_score.redacted_text)
+    original_judgement = judge_fit(role, pair.original, model_client)
+    altered_judgement = judge_fit(role, pair.altered, model_client)
+    leaked = redaction_leaked(original_judgement.redacted_text, altered_judgement.redacted_text)
 
-    if original_score.fit is None or altered_score.fit is None:
+    if original_judgement.fit is None or altered_judgement.fit is None:
         return CounterfactualMeasurement(
             evaluation_role_id=evaluation_role_id,
             candidate_id=candidate_id,
@@ -225,11 +248,11 @@ def measure_counterfactual_pair(
             dimensions_moved=None,
         )
 
-    movement = abs(fit_weight(altered_score.fit) - fit_weight(original_score.fit))
+    movement = abs(fit_weight(altered_judgement.fit) - fit_weight(original_judgement.fit))
     dimensions_moved = sum(
         1
         for original_dimension, altered_dimension in zip(
-            original_score.fit.dimensions, altered_score.fit.dimensions
+            original_judgement.fit.dimensions, altered_judgement.fit.dimensions
         )
         if original_dimension.rating != altered_dimension.rating
     )
@@ -290,19 +313,44 @@ def _sample_resumes(
     return [resume for resume in corpus if relevance_by_id[resume.candidate_id]][:sample_size]
 
 
-def _aggregate(
-    evaluation_role_id: str, category: str, measurements: Sequence[CounterfactualMeasurement]
-) -> RoleCounterfactualResult:
+@dataclass(frozen=True)
+class _MovementAggregate:
+    mean_fit_weight_movement: float
+    max_fit_weight_movement: int
+    redaction_leak_count: int
+    redaction_leak_rate: float
+
+
+def _aggregate_measurements(
+    measurements: Sequence[CounterfactualMeasurement],
+) -> _MovementAggregate:
+    """The mean/max Fit-weight movement and Redaction-leak rate shared by
+    both RoleCounterfactualResult (one Evaluation Role) and
+    CounterfactualSensitivityReport (every Role) - the same formula
+    computed at two different groupings of the same measurements.
+    """
     movements = [m.fit_weight_movement for m in measurements if m.fit_weight_movement is not None]
     leaks = sum(1 for m in measurements if m.redaction_leaked)
-    return RoleCounterfactualResult(
-        evaluation_role_id=evaluation_role_id,
-        category=category,
-        measurements=tuple(measurements),
+    return _MovementAggregate(
         mean_fit_weight_movement=sum(movements) / len(movements) if movements else 0.0,
         max_fit_weight_movement=max(movements, default=0),
         redaction_leak_count=leaks,
         redaction_leak_rate=leaks / len(measurements) if measurements else 0.0,
+    )
+
+
+def _aggregate(
+    evaluation_role_id: str, category: str, measurements: Sequence[CounterfactualMeasurement]
+) -> RoleCounterfactualResult:
+    agg = _aggregate_measurements(measurements)
+    return RoleCounterfactualResult(
+        evaluation_role_id=evaluation_role_id,
+        category=category,
+        measurements=tuple(measurements),
+        mean_fit_weight_movement=agg.mean_fit_weight_movement,
+        max_fit_weight_movement=agg.max_fit_weight_movement,
+        redaction_leak_count=agg.redaction_leak_count,
+        redaction_leak_rate=agg.redaction_leak_rate,
     )
 
 
@@ -353,14 +401,11 @@ def run_counterfactual_sensitivity(
         for evaluation_role in evaluation_roles
     )
     all_measurements = [m for result in results for m in result.measurements]
-    movements = [
-        m.fit_weight_movement for m in all_measurements if m.fit_weight_movement is not None
-    ]
-    leaks = sum(1 for m in all_measurements if m.redaction_leaked)
+    agg = _aggregate_measurements(all_measurements)
     return CounterfactualSensitivityReport(
         results=results,
-        mean_fit_weight_movement=sum(movements) / len(movements) if movements else 0.0,
-        max_fit_weight_movement=max(movements, default=0),
-        redaction_leak_count=leaks,
-        redaction_leak_rate=leaks / len(all_measurements) if all_measurements else 0.0,
+        mean_fit_weight_movement=agg.mean_fit_weight_movement,
+        max_fit_weight_movement=agg.max_fit_weight_movement,
+        redaction_leak_count=agg.redaction_leak_count,
+        redaction_leak_rate=agg.redaction_leak_rate,
     )

@@ -4,7 +4,7 @@ that produces reported results.
 
 For each Evaluation Role, samples its Proxy-Relevant corpus Resumes,
 alters one identity signal at a time in each (name, gender, nationality),
-and scores both variants through screening.ranking.score_fit - the same
+and judges both variants through screening.ranking.judge_fit - the same
 redact-then-rank path real Ranking calls go through. The report carries
 both the Fit-movement measurement and the deterministic Redaction-leak
 check side by side; neither is filtered or thresholded, so an unflattering
@@ -20,32 +20,14 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from dataclasses import asdict
 from pathlib import Path
 
-from screening.counterfactual import run_counterfactual_sensitivity
-from screening.deepseek_client import DeepSeekModelClient, build_live_transport
-from screening.eval_roles import read_evaluation_roles
-from screening.gold_set import exclude_gold_set_candidates, read_gold_set
-from screening.proxy_relevance import CorpusResume
-
-RESUME_ATLAS_DATASET = "ahmedheakl/resume-atlas"
-API_KEY_ENV_VAR = "DEEPSEEK_API_KEY"
-
-
-def load_resume_atlas_corpus(parquet_path: Path) -> list[CorpusResume]:
-    import pyarrow.parquet as pq
-
-    table = pq.read_table(parquet_path, columns=["Category", "Text"])
-    categories = table.column("Category").to_pylist()
-    texts = table.column("Text").to_pylist()
-    return [
-        CorpusResume(candidate_id=f"resume-atlas-{index}", category=category or "", text=text)
-        for index, (category, text) in enumerate(zip(categories, texts))
-        if text and text.strip()
-    ]
+from screening.counterfactual import DEFAULT_SAMPLE_SIZE, run_counterfactual_sensitivity
+from screening.deepseek_client import MissingApiKey, build_deepseek_client
+from screening.evaluation_inputs import GOLD_SET_HELP, load_evaluation_inputs
+from screening.resume_atlas import RESUME_ATLAS_DATASET
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -56,7 +38,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--evaluation-roles-dir", type=Path, default=Path("data/evaluation_roles/roles")
     )
-    parser.add_argument("--gold-set", type=Path, default=Path("data/gold_set/gold_set.json"))
+    parser.add_argument(
+        "--gold-set",
+        type=Path,
+        default=None,
+        help=GOLD_SET_HELP.format(noun="sample corpus"),
+    )
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument(
         "--sample-size",
@@ -66,30 +53,26 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    api_key = os.environ.get(API_KEY_ENV_VAR)
-    if not api_key:
-        print(f"error: {API_KEY_ENV_VAR} must be set to run this measurement", file=sys.stderr)
+    try:
+        model_client = build_deepseek_client(usage="to run this measurement")
+    except MissingApiKey as exc:
+        print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    evaluation_roles = read_evaluation_roles(args.evaluation_roles_dir)
-    if not evaluation_roles:
-        print(f"error: no Evaluation Roles found under {args.evaluation_roles_dir}", file=sys.stderr)
+    inputs = load_evaluation_inputs(
+        evaluation_roles_dir=args.evaluation_roles_dir,
+        resume_atlas_parquet=args.resume_atlas_parquet,
+        gold_set=args.gold_set,
+        held_out_noun="sample corpus",
+    )
+    if inputs is None:
         return 1
+    evaluation_roles, corpus = inputs.evaluation_roles, inputs.corpus
 
-    corpus = load_resume_atlas_corpus(args.resume_atlas_parquet)
-    if not corpus:
-        print(f"error: no Resumes loaded from {args.resume_atlas_parquet}", file=sys.stderr)
-        return 1
-
-    if args.gold_set.exists():
-        gold_set = read_gold_set(args.gold_set)
-        before = len(corpus)
-        corpus = exclude_gold_set_candidates(corpus, gold_set)
-        print(f"Held {before - len(corpus)} Gold Set Resume(s) out of the sample corpus")
-
-    model_client = DeepSeekModelClient(build_live_transport(api_key))
-    kwargs = {} if args.sample_size is None else {"sample_size": args.sample_size}
-    report = run_counterfactual_sensitivity(evaluation_roles, corpus, model_client, **kwargs)
+    sample_size = args.sample_size if args.sample_size is not None else DEFAULT_SAMPLE_SIZE
+    report = run_counterfactual_sensitivity(
+        evaluation_roles, corpus, model_client, sample_size=sample_size
+    )
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(asdict(report), indent=2) + "\n")

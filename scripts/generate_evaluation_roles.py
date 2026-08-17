@@ -15,8 +15,13 @@ can't be scripted away:
               "text"}]}}) produced by a human going through a sample of at
               least 10, and writes the 43 checked-in Evaluation Role files.
               A category absent from the review file is auto-approved as
-              extraction produced it (ADR-0008: no Recruiter is present in
-              eval mode, so the sample review is what keeps that honest).
+              extraction produced it - the blanket auto-approval ADR-0008
+              warns would make Requirement Set review decorative. That is a
+              deliberate, bounded exception for the categories outside the
+              required review sample, not a rejection of the ADR's concern:
+              reviewed_sample_size is gated at check-in and reported
+              alongside every result, so a reader can see how much of the
+              43 a human actually reviewed rather than assume all of it.
 
 Usage:
     uv run --group data python scripts/generate_evaluation_roles.py propose \
@@ -36,15 +41,15 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from screening.deepseek_client import DeepSeekModelClient, build_live_transport
+from screening.deepseek_client import MissingApiKey, build_deepseek_client
 from screening.domain import JobDescription, Requirement, Role, approve_requirement_set
 from screening.eval_roles import (
     CATEGORY_SEARCH_TERMS,
+    CategoryMatch,
     EvaluationRole,
     PostingCandidate,
     PostingProvenance,
@@ -53,10 +58,10 @@ from screening.eval_roles import (
 )
 from screening.extraction import extract_requirements
 from screening.model_client import ModelClientError
+from screening.resume_atlas import RESUME_ATLAS_DATASET
 
-RESUME_ATLAS_DATASET = "ahmedheakl/resume-atlas"
 POSTINGS_DATASET = "NextGig-Rocks/global-job-postings-multi-ats"
-API_KEY_ENV_VAR = "DEEPSEEK_API_KEY"
+MIN_REVIEWED_SAMPLE_SIZE = 10  # ADR-0008: "reviewed on a sample of at least 10 of the 43"
 
 
 def load_resume_atlas_categories(parquet_path: Path) -> list[str]:
@@ -136,15 +141,13 @@ def build_job_description_text(posting: PostingCandidate) -> str:
     return "\n\n".join(sections)
 
 
-def write_mapping_report(matches: dict, path: Path) -> None:
+def write_mapping_report(matches: dict[str, CategoryMatch | None], path: Path) -> None:
     lines = [
         "# Evaluation Role category-to-posting mapping",
         "",
         f"Source postings corpus: `{POSTINGS_DATASET}`.",
-        "Matched by script (screening.eval_roles.match_all_categories) against the",
-        "keyword table in CATEGORY_SEARCH_TERMS - see that module for the matching",
-        "rule. Review this table for a category matched to the wrong kind of role:",
-        "a bad match here silently corrupts Proxy Relevance for that Role (ADR-0008).",
+        "Matched by script (screening.eval_roles.match_all_categories) against the keyword table in CATEGORY_SEARCH_TERMS - see that module for the matching rule.",
+        "Review this table for a category matched to the wrong kind of role: a bad match here silently corrupts Proxy Relevance for that Role (ADR-0008).",
         "",
         "| Category | Matched term | Posting title | Company |",
         "|---|---|---|---|",
@@ -160,9 +163,10 @@ def write_mapping_report(matches: dict, path: Path) -> None:
 
 
 def cmd_propose(args: argparse.Namespace) -> int:
-    api_key = os.environ.get(API_KEY_ENV_VAR)
-    if not api_key:
-        print(f"error: {API_KEY_ENV_VAR} must be set to run live extraction", file=sys.stderr)
+    try:
+        model_client = build_deepseek_client(usage="to run live extraction")
+    except MissingApiKey as exc:
+        print(f"error: {exc}", file=sys.stderr)
         return 1
 
     categories = load_resume_atlas_categories(args.resume_atlas_parquet)
@@ -182,7 +186,6 @@ def cmd_propose(args: argparse.Namespace) -> int:
     write_mapping_report(matches, args.mapping_out)
     print(f"Wrote mapping report to {args.mapping_out}")
 
-    model_client = DeepSeekModelClient(build_live_transport(api_key))
     proposals = {}
     for index, (category, match) in enumerate(sorted(matches.items()), start=1):
         assert match is not None
@@ -217,8 +220,19 @@ def cmd_propose(args: argparse.Namespace) -> int:
 
 
 def cmd_finalize(args: argparse.Namespace) -> int:
+    if args.reviewed_sample_size < MIN_REVIEWED_SAMPLE_SIZE:
+        print(
+            f"error: --reviewed-sample-size must be at least {MIN_REVIEWED_SAMPLE_SIZE} "
+            f"(ADR-0008), got {args.reviewed_sample_size}",
+            file=sys.stderr,
+        )
+        return 1
+    if not args.review.exists():
+        print(f"error: --review file not found at {args.review}", file=sys.stderr)
+        return 1
+
     proposals = json.loads(args.proposals.read_text())
-    review = json.loads(args.review.read_text()) if args.review.exists() else {}
+    review = json.loads(args.review.read_text())
 
     generated_at = datetime.now(timezone.utc)
     evaluation_roles = []
@@ -238,8 +252,14 @@ def cmd_finalize(args: argparse.Namespace) -> int:
 
         requirement_set = approve_requirement_set(requirements)
         evaluation_role_id = f"eval-role-{index:02d}"
-        role = Role(id=evaluation_role_id, title=category, requirement_set=requirement_set)
         posting = PostingProvenance(**proposal["posting"])
+        # The real posting's own title, not the resume-atlas category label:
+        # Proxy Relevance is defined by category match (screening.proxy_
+        # relevance), so a Role titled after the category would hand the
+        # Ranking prompt the exact string its own evaluation ground truth is
+        # keyed on - the same circularity ADR-0008 forbids for Job
+        # Description generation, one step downstream in the Role itself.
+        role = Role(id=evaluation_role_id, title=posting.title, requirement_set=requirement_set)
         evaluation_roles.append(
             EvaluationRole(
                 evaluation_role_id=evaluation_role_id,

@@ -8,7 +8,9 @@ by reading CATEGORY_SEARCH_TERMS rather than by trusting an opaque number.
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pytest
 
@@ -22,6 +24,7 @@ from screening.eval_roles import (
     match_category_to_posting,
     read_evaluation_role,
     read_evaluation_roles,
+    read_evaluation_roles_metadata,
     score_posting,
     write_evaluation_role,
 )
@@ -249,3 +252,37 @@ def test_read_evaluation_roles_reads_every_checked_in_file(tmp_path):
     roles = read_evaluation_roles(tmp_path)
 
     assert {r.evaluation_role_id for r in roles} == {"eval-role-01", "eval-role-02"}
+
+
+def test_read_evaluation_roles_metadata_reads_the_checked_in_file(tmp_path):
+    path = tmp_path / "metadata.json"
+    path.write_text(
+        json.dumps(
+            {
+                "total_evaluation_roles": 43,
+                "reviewed_sample_size": 12,
+                "source_resume_corpus": "ahmedheakl/resume-atlas",
+                "source_postings_corpus": "NextGig-Rocks/global-job-postings-multi-ats",
+                "generated_at": "2026-08-16T12:08:50.845260+00:00",
+            }
+        )
+    )
+
+    metadata = read_evaluation_roles_metadata(path)
+
+    assert metadata.total_evaluation_roles == 43
+    assert metadata.reviewed_sample_size == 12
+    assert metadata.source_resume_corpus == "ahmedheakl/resume-atlas"
+
+
+def test_read_evaluation_roles_metadata_reads_the_actual_checked_in_metadata():
+    """A read against the real, checked-in artifact (not a fixture copy) -
+    a regression check that the reader's field names actually match what
+    scripts/generate_evaluation_roles.py finalize writes.
+    """
+    path = Path(__file__).parent.parent / "data" / "evaluation_roles" / "metadata.json"
+
+    metadata = read_evaluation_roles_metadata(path)
+
+    assert metadata.reviewed_sample_size <= metadata.total_evaluation_roles
+    assert metadata.reviewed_sample_size >= 10  # ADR-0008: at least 10 of 43

@@ -6,11 +6,10 @@ queries actually require one.
 from __future__ import annotations
 
 import json
-import os
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Protocol
+from typing import Protocol, TextIO
 
 from screening.domain import (
     JobDescription,
@@ -22,6 +21,8 @@ from screening.domain import (
     ShortlistEntry,
     match_outcome,
 )
+from screening.fileio import write_once
+from screening.model_client import RunMetrics
 
 
 @dataclass(frozen=True)
@@ -30,10 +31,7 @@ class ScreeningRun:
     role: Role
     shortlist: Shortlist
     created_at: datetime
-    parse_failure_count: int = 0
-    parse_failure_rate: float = 0.0
-    cache_hit_tokens: int = 0
-    cache_miss_tokens: int = 0
+    metrics: RunMetrics = field(default_factory=RunMetrics)
 
 
 class RunAlreadyExists(Exception):
@@ -56,24 +54,18 @@ class FileRunStore:
 
     def save(self, run: ScreeningRun) -> Path:
         path = self._root / f"{run.run_id}.jsonl"
+
+        def write_body(fh: TextIO) -> None:
+            fh.write(json.dumps(_header(run)) + "\n")
+            for entry in run.shortlist.entries:
+                fh.write(json.dumps(_entry_record(entry)) + "\n")
+
         try:
-            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+            return write_once(path, write_body)
         except FileExistsError as exc:
             raise RunAlreadyExists(
                 f"Screening Run {run.run_id!r} already recorded at {path}"
             ) from exc
-
-        try:
-            with os.fdopen(fd, "w") as fh:
-                fh.write(json.dumps(_header(run)) + "\n")
-                for entry in run.shortlist.entries:
-                    fh.write(json.dumps(_entry_record(entry)) + "\n")
-        except BaseException:
-            path.unlink(missing_ok=True)
-            raise
-
-        path.chmod(0o444)
-        return path
 
 
 def _header(run: ScreeningRun) -> dict:
@@ -81,10 +73,11 @@ def _header(run: ScreeningRun) -> dict:
         "run_id": run.run_id,
         "created_at": run.created_at.isoformat(),
         "role": asdict(run.role),
-        "parse_failure_count": run.parse_failure_count,
-        "parse_failure_rate": run.parse_failure_rate,
-        "cache_hit_tokens": run.cache_hit_tokens,
-        "cache_miss_tokens": run.cache_miss_tokens,
+        "parse_failure_count": run.metrics.parse_failures,
+        "parse_failure_rate": run.metrics.parse_failure_rate,
+        "cache_hit_tokens": run.metrics.cache_hit_tokens,
+        "cache_miss_tokens": run.metrics.cache_miss_tokens,
+        "comparisons": [asdict(c) for c in run.shortlist.comparisons],
     }
 
 
@@ -184,18 +177,8 @@ class FileExtractionRecordStore:
 
     def _write(self, path: Path, payload: dict) -> Path:
         try:
-            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+            return write_once(path, lambda fh: fh.write(json.dumps(payload)))
         except FileExistsError as exc:
             raise ExtractionRecordAlreadyExists(
                 f"Requirement Extraction Record already recorded at {path}"
             ) from exc
-
-        try:
-            with os.fdopen(fd, "w") as fh:
-                fh.write(json.dumps(payload))
-        except BaseException:
-            path.unlink(missing_ok=True)
-            raise
-
-        path.chmod(0o444)
-        return path

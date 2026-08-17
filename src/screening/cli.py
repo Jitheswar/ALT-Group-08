@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
 from screening.core import run_screening
-from screening.deepseek_client import DeepSeekModelClient, build_live_transport
+from screening.deepseek_client import API_KEY_ENV_VAR, MissingApiKey, build_deepseek_client
 from screening.domain import (
     Candidate,
     Fit,
@@ -22,7 +22,7 @@ from screening.domain import (
     match_outcome,
 )
 from screening.extraction import extract_requirements
-from screening.model_client import ModelClient, ModelClientError, RunMetrics
+from screening.model_client import ModelClient, ModelClientError
 from screening.scripted_client import ScriptedModelClient
 from screening.store import (
     FileExtractionRecordStore,
@@ -31,13 +31,6 @@ from screening.store import (
     RequirementProposalRecord,
     ScreeningRun,
 )
-
-API_KEY_ENV_VAR = "DEEPSEEK_API_KEY"
-
-
-class MissingApiKey(Exception):
-    pass
-
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
@@ -172,16 +165,12 @@ def _run_screen(args: argparse.Namespace) -> int:
     candidates = _load_candidates(args.resumes)
     shortlist = run_screening(role, candidates, model_client)
 
-    metrics = getattr(model_client, "metrics", RunMetrics())
     run = ScreeningRun(
         run_id=str(uuid4()),
         role=role,
         shortlist=shortlist,
         created_at=datetime.now(timezone.utc),
-        parse_failure_count=metrics.parse_failures,
-        parse_failure_rate=metrics.parse_failure_rate,
-        cache_hit_tokens=metrics.cache_hit_tokens,
-        cache_miss_tokens=metrics.cache_miss_tokens,
+        metrics=replace(model_client.metrics),
     )
     run_path = FileRunStore(args.runs_dir).save(run)
 
@@ -203,11 +192,7 @@ def _run_screen(args: argparse.Namespace) -> int:
 def _build_model_client(*, live: bool) -> ModelClient:
     if not live:
         return ScriptedModelClient()
-
-    api_key = os.environ.get(API_KEY_ENV_VAR)
-    if not api_key:
-        raise MissingApiKey(f"{API_KEY_ENV_VAR} must be set to run with --live")
-    return DeepSeekModelClient(build_live_transport(api_key))
+    return build_deepseek_client(usage="to run with --live")
 
 
 def _parse_requirements(items: list[dict]) -> tuple[Requirement, ...]:

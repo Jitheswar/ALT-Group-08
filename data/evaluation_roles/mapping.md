@@ -1,10 +1,8 @@
 # Evaluation Role category-to-posting mapping
 
 Source postings corpus: `NextGig-Rocks/global-job-postings-multi-ats`.
-Matched by script (screening.eval_roles.match_all_categories) against the
-keyword table in CATEGORY_SEARCH_TERMS - see that module for the matching
-rule. Review this table for a category matched to the wrong kind of role:
-a bad match here silently corrupts Proxy Relevance for that Role (ADR-0008).
+Matched by script (screening.eval_roles.match_all_categories) against the keyword table in CATEGORY_SEARCH_TERMS - see that module for the matching rule.
+Review this table for a category matched to the wrong kind of role: a bad match here silently corrupts Proxy Relevance for that Role (ADR-0008).
 
 | Category | Matched term | Posting title | Company |
 |---|---|---|---|

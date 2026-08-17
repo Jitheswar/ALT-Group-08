@@ -1,13 +1,15 @@
 """Counterfactual Sensitivity (ticket 09, ADR-0005). Pair generation and the
 leak check are pure, tested directly on fixed inputs per the spec's testing
 decisions. Movement measurement goes through the same seam as the rest of
-the suite - screening.ranking.score_fit, reached via scripted/fake model
+the suite - screening.ranking.judge_fit, reached via scripted/fake model
 clients - mirroring tests/test_sweep.py.
 """
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pytest
 
@@ -30,6 +32,8 @@ from screening.model_client import (
 from screening.proxy_relevance import CorpusResume
 from screening.ranking import DIMENSIONS
 from tests.fakes import RecordingFakeModelClient
+
+_GOLD_SET_PATH = Path(__file__).parent.parent / "data" / "gold_set" / "gold_set.json"
 
 
 def _evaluation_role(evaluation_role_id: str, category: str) -> EvaluationRole:
@@ -143,6 +147,30 @@ def test_a_resume_with_several_signals_yields_one_pair_per_signal():
         assert "led a migration to a new payments platform" in pair.altered.text
 
 
+def test_name_pairs_are_actually_generated_on_a_held_out_sample_of_the_real_corpus():
+    """Ticket 09's acceptance criterion is that the name signal - the
+    primary identity signal - is measured, not just generated in principle.
+    Every fixture above uses a conventionally capitalised Resume; this
+    checks the real resume-atlas corpus (via the checked-in Gold Set,
+    ADR-0008) actually produces name pairs at production scale, the same
+    gap that left detect_candidate_name at 0% before the redaction fix
+    (see tests/test_redaction.py's held-out sample).
+    """
+    rows = json.loads(_GOLD_SET_PATH.read_text())
+    sample = rows[:100]
+
+    name_pair_count = sum(
+        1
+        for row in sample
+        for pair in generate_counterfactual_pairs(Resume(text=row["resume"]["text"]))
+        if pair.signal == "name"
+    )
+
+    assert name_pair_count / len(sample) >= 0.85, (
+        f"only {name_pair_count}/{len(sample)} sampled Resumes yielded a name pair"
+    )
+
+
 # --- Leak check: pure ------------------------------------------------------
 
 
@@ -154,7 +182,7 @@ def test_redaction_leaked_is_true_for_differing_redacted_text():
     assert redaction_leaked("[REDACTED-NAME] engineer", "Priya engineer") is True
 
 
-# --- Movement measurement: through the real score_fit seam ----------------
+# --- Movement measurement: through the real judge_fit seam ----------------
 
 
 def test_measure_counterfactual_pair_reports_fit_weight_and_dimension_movement():

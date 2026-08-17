@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 from screening.domain import (
+    Comparison,
     Disqualified,
     Qualified,
     Requirement,
@@ -21,6 +22,7 @@ from screening.domain import (
     ShortlistEntry,
     Unresolved,
 )
+from screening.model_client import RunMetrics
 from screening.store import FileRunStore, RunAlreadyExists, ScreeningRun
 
 REQ_PYTHON = Requirement(id="req-python", text="5+ years of Python")
@@ -147,10 +149,7 @@ def test_saved_run_records_parse_failure_and_cache_token_counts(tmp_path: Path):
         role=_role(),
         shortlist=_shortlist(),
         created_at=datetime.now(timezone.utc),
-        parse_failure_count=2,
-        parse_failure_rate=0.25,
-        cache_hit_tokens=1200,
-        cache_miss_tokens=300,
+        metrics=RunMetrics(total_attempts=8, parse_failures=2, cache_hit_tokens=1200, cache_miss_tokens=300),
     )
 
     path = store.save(run)
@@ -172,6 +171,32 @@ def test_a_run_with_no_reported_metrics_defaults_them_to_zero(tmp_path: Path):
     assert header["parse_failure_rate"] == 0.0
     assert header["cache_hit_tokens"] == 0
     assert header["cache_miss_tokens"] == 0
+
+
+def test_saved_run_records_the_comparative_passs_justifications(tmp_path: Path):
+    store = FileRunStore(tmp_path)
+    shortlist = Shortlist(
+        entries=_shortlist().entries,
+        comparisons=(
+            Comparison(
+                winner_id="alice",
+                loser_id="bob",
+                justification="Alice's Resume evidences deeper ownership of the stack",
+            ),
+        ),
+    )
+    run = ScreeningRun(run_id="run-1", role=_role(), shortlist=shortlist, created_at=datetime.now(timezone.utc))
+
+    path = store.save(run)
+
+    header = json.loads(path.read_text().splitlines()[0])
+    assert header["comparisons"] == [
+        {
+            "winner_id": "alice",
+            "loser_id": "bob",
+            "justification": "Alice's Resume evidences deeper ownership of the stack",
+        }
+    ]
 
 
 def test_different_runs_get_their_own_file(tmp_path: Path):

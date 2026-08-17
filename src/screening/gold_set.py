@@ -9,13 +9,19 @@ smooth over.
 from __future__ import annotations
 
 import json
-import os
 from collections.abc import Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from screening.core import run_screening
+from screening.domain import Candidate, Resume
 from screening.eval_roles import EvaluationRole
+from screening.fileio import write_once
+from screening.metrics import ndcg_at_k, precision_at_k, reciprocal_rank
+from screening.model_client import ModelClient
 from screening.proxy_relevance import CorpusResume, construct_proxy_relevance
+
+DEFAULT_GOLD_SET_PATH = Path("data/gold_set/gold_set.json")
 
 
 @dataclass(frozen=True)
@@ -50,15 +56,7 @@ def write_gold_set(labels: Sequence[GoldSetLabel], path: Path) -> Path:
         for label in labels
     ]
 
-    fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
-    try:
-        with os.fdopen(fd, "w") as fh:
-            fh.write(json.dumps(payload, indent=2) + "\n")
-    except BaseException:
-        path.unlink(missing_ok=True)
-        raise
-    path.chmod(0o444)
-    return path
+    return write_once(path, lambda fh: fh.write(json.dumps(payload, indent=2) + "\n"))
 
 
 def read_gold_set(path: Path) -> list[GoldSetLabel]:
@@ -73,6 +71,25 @@ def read_gold_set(path: Path) -> list[GoldSetLabel]:
         )
         for row in data
     ]
+
+
+def resolve_gold_set_path(
+    explicit: Path | None, *, default: Path = DEFAULT_GOLD_SET_PATH
+) -> Path | None:
+    """Resolves which Gold Set file a sweep or measurement script should
+    hold out of its corpus, distinguishing "no Gold Set built yet" from "a
+    Gold Set path was given but is wrong": an explicit `--gold-set` that
+    does not exist raises rather than being silently treated as "hold
+    nothing out", which would otherwise leak hand-labelled Resumes into
+    Proxy Relevance at corpus scale without any indication in the run's
+    output. Only the unspecified default is allowed to resolve to "skip" -
+    a caller that never had a Gold Set to begin with.
+    """
+    if explicit is not None:
+        if not explicit.exists():
+            raise FileNotFoundError(f"Gold Set not found at {explicit}")
+        return explicit
+    return default if default.exists() else None
 
 
 def exclude_gold_set_candidates(
@@ -163,4 +180,93 @@ def compare_gold_set_to_proxy_relevance(
         agreement_rate=sum(d.agree for d in divergences) / count,
         proxy_false_positive_rate=(false_positives / len(hand_negative)) if hand_negative else 0.0,
         proxy_false_negative_rate=(false_negatives / len(hand_positive)) if hand_positive else 0.0,
+    )
+
+
+@dataclass(frozen=True)
+class GoldSetRankResult:
+    """One Evaluation Role's Gold Set pool, ranked once by the real
+    Screening+Ranking pipeline and then scored two ways over the identical
+    resulting order: against the Gold Set's own hand labels, and against
+    Proxy Relevance constructed for the same pool. `compare_gold_set_to_
+    proxy_relevance` above only reports how often the two tiers' *labels*
+    agree; it cannot show a rank metric that looks better under Proxy
+    Relevance than the hand-labelled Gold Set actually supports, since
+    that requires comparing rank metrics against rank metrics over the same
+    order - what this computes instead (ticket 08's acceptance criterion,
+    ADR-0003).
+    """
+
+    evaluation_role_id: str
+    k: int
+    hand_precision_at_k: float
+    hand_ndcg_at_k: float
+    hand_reciprocal_rank: float
+    proxy_precision_at_k: float
+    proxy_ndcg_at_k: float
+    proxy_reciprocal_rank: float
+
+
+def rank_gold_set_role(
+    evaluation_role: EvaluationRole,
+    labels: Sequence[GoldSetLabel],
+    model_client: ModelClient,
+) -> GoldSetRankResult:
+    """Runs the real Screening+Ranking pipeline once over `evaluation_role`'s
+    own Gold Set pool - every Resume hand-labelled against it - and scores
+    the resulting order against both the hand labels and Proxy Relevance.
+    `k` is the full pool size: the Gold Set's pool per Role is small by
+    construction (ticket 08), so there is no separate top-band cutoff to
+    apply on top of it.
+    """
+    if not labels:
+        raise ValueError("rank_gold_set_role requires at least one label")
+
+    candidates = [
+        Candidate(id=label.resume.candidate_id, resume=Resume(text=label.resume.text))
+        for label in labels
+    ]
+    hand_relevance_by_id = {label.resume.candidate_id: label.relevant for label in labels}
+    proxy_relevance_by_id = construct_proxy_relevance(
+        evaluation_role.category, [label.resume for label in labels]
+    )
+
+    k = len(candidates)
+    shortlist = run_screening(evaluation_role.role, candidates, model_client, top_band_size=k)
+
+    hand_ordered = [hand_relevance_by_id[entry.candidate_id] for entry in shortlist.entries]
+    proxy_ordered = [proxy_relevance_by_id[entry.candidate_id] for entry in shortlist.entries]
+
+    return GoldSetRankResult(
+        evaluation_role_id=evaluation_role.evaluation_role_id,
+        k=k,
+        hand_precision_at_k=precision_at_k(hand_ordered, k),
+        hand_ndcg_at_k=ndcg_at_k(hand_ordered, k),
+        hand_reciprocal_rank=reciprocal_rank(hand_ordered),
+        proxy_precision_at_k=precision_at_k(proxy_ordered, k),
+        proxy_ndcg_at_k=ndcg_at_k(proxy_ordered, k),
+        proxy_reciprocal_rank=reciprocal_rank(proxy_ordered),
+    )
+
+
+def rank_gold_set(
+    gold_set: Sequence[GoldSetLabel],
+    evaluation_roles: Sequence[EvaluationRole],
+    model_client: ModelClient,
+) -> tuple[GoldSetRankResult, ...]:
+    """Every Evaluation Role's Gold Set pool ranked and scored via
+    rank_gold_set_role, in evaluation_role_id order - reproducible from what
+    is checked in, mirroring screening.sweep.run_sweep.
+    """
+    if not gold_set:
+        raise ValueError("rank_gold_set requires at least one label")
+
+    role_by_id = {role.evaluation_role_id: role for role in evaluation_roles}
+    labels_by_role: dict[str, list[GoldSetLabel]] = {}
+    for label in gold_set:
+        labels_by_role.setdefault(label.evaluation_role_id, []).append(label)
+
+    return tuple(
+        rank_gold_set_role(role_by_id[role_id], labels, model_client)
+        for role_id, labels in sorted(labels_by_role.items())
     )

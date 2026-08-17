@@ -36,9 +36,9 @@ class RoleSweepResult:
 
     evaluation_role_id: str
     category: str
-    precision_at_k: float
-    ndcg_at_k: float
-    reciprocal_rank: float
+    proxy_precision_at_k: float
+    proxy_ndcg_at_k: float
+    proxy_reciprocal_rank: float
     parse_failure_count: int
     parse_failure_rate: float
 
@@ -53,21 +53,19 @@ class SweepReport:
 
     k: int
     results: tuple[RoleSweepResult, ...]
-    mean_precision_at_k: float
-    mean_ndcg_at_k: float
-    mrr: float
+    mean_proxy_precision_at_k: float
+    mean_proxy_ndcg_at_k: float
+    proxy_mrr: float
     parse_failure_count: int
     parse_failure_rate: float
 
 
 def _metrics_snapshot(model_client: ModelClient) -> RunMetrics:
-    """A point-in-time copy of the model client's cumulative RunMetrics -
-    ScriptedModelClient and other doubles with nothing to report simply
-    have no `metrics` attribute (model_client.RunMetrics's own docstring),
-    so a missing attribute is read as zeroed rather than an error.
+    """A point-in-time copy of the model client's cumulative RunMetrics,
+    taken before and after a sweep so the delta between the two snapshots
+    is what that sweep alone accrued.
     """
-    metrics = getattr(model_client, "metrics", None)
-    return replace(metrics) if metrics is not None else RunMetrics()
+    return replace(model_client.metrics)
 
 
 def _parse_failure_stats(before: RunMetrics, after: RunMetrics) -> tuple[int, float]:
@@ -110,9 +108,9 @@ def sweep_role(
     return RoleSweepResult(
         evaluation_role_id=evaluation_role.evaluation_role_id,
         category=evaluation_role.category,
-        precision_at_k=precision_at_k(ordered_relevance, k),
-        ndcg_at_k=ndcg_at_k(ordered_relevance, k),
-        reciprocal_rank=reciprocal_rank(ordered_relevance),
+        proxy_precision_at_k=precision_at_k(ordered_relevance, k),
+        proxy_ndcg_at_k=ndcg_at_k(ordered_relevance, k),
+        proxy_reciprocal_rank=reciprocal_rank(ordered_relevance),
         parse_failure_count=parse_failure_count,
         parse_failure_rate=parse_failure_rate,
     )
@@ -148,9 +146,9 @@ def run_sweep(
     return SweepReport(
         k=k,
         results=results,
-        mean_precision_at_k=sum(r.precision_at_k for r in results) / count,
-        mean_ndcg_at_k=sum(r.ndcg_at_k for r in results) / count,
-        mrr=sum(r.reciprocal_rank for r in results) / count,
+        mean_proxy_precision_at_k=sum(r.proxy_precision_at_k for r in results) / count,
+        mean_proxy_ndcg_at_k=sum(r.proxy_ndcg_at_k for r in results) / count,
+        proxy_mrr=sum(r.proxy_reciprocal_rank for r in results) / count,
         parse_failure_count=parse_failure_count,
         parse_failure_rate=parse_failure_rate,
     )

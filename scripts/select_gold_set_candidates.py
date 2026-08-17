@@ -43,8 +43,8 @@ from collections import defaultdict
 from pathlib import Path
 
 from screening.eval_roles import EvaluationRole, read_evaluation_roles
-
-RESUME_ATLAS_DATASET = "ahmedheakl/resume-atlas"
+from screening.proxy_relevance import CorpusResume
+from screening.resume_atlas import load_resume_atlas_corpus
 
 # Five broad job families covering every resume-atlas category (43 total),
 # used only to pick a same-discipline "adjacent" category and a
@@ -137,34 +137,21 @@ def distant_category(category: str) -> str:
     return distant_members[index % len(distant_members)]
 
 
-def load_resume_atlas_corpus(parquet_path: Path) -> list[dict]:
-    import pyarrow.parquet as pq
-
-    table = pq.read_table(parquet_path, columns=["Category", "Text"])
-    categories = table.column("Category").to_pylist()
-    texts = table.column("Text").to_pylist()
-    return [
-        {"candidate_id": f"resume-atlas-{index}", "category": category or "", "text": text}
-        for index, (category, text) in enumerate(zip(categories, texts))
-        if text and text.strip()
-    ]
-
-
 def _stable_offset(key: str, modulus: int) -> int:
     digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
     return int(digest, 16) % modulus
 
 
-def _picker(corpus_by_category: dict[str, list[dict]], used: set[str]):
-    def pick(category: str, key: str) -> dict:
+def _picker(corpus_by_category: dict[str, list[CorpusResume]], used: set[str]):
+    def pick(category: str, key: str) -> CorpusResume:
         rows = corpus_by_category[category]
         if not rows:
             raise RuntimeError(f"no resume-atlas rows for category {category!r}")
         start = _stable_offset(key, len(rows))
         for offset in range(len(rows)):
             row = rows[(start + offset) % len(rows)]
-            if row["candidate_id"] not in used:
-                used.add(row["candidate_id"])
+            if row.candidate_id not in used:
+                used.add(row.candidate_id)
                 return row
         raise RuntimeError(f"category {category!r} exhausted before a unique Resume was found")
 
@@ -172,11 +159,11 @@ def _picker(corpus_by_category: dict[str, list[dict]], used: set[str]):
 
 
 def select_candidates(
-    evaluation_roles: list[EvaluationRole], corpus: list[dict]
+    evaluation_roles: list[EvaluationRole], corpus: list[CorpusResume]
 ) -> list[dict]:
-    corpus_by_category: dict[str, list[dict]] = defaultdict(list)
+    corpus_by_category: dict[str, list[CorpusResume]] = defaultdict(list)
     for row in corpus:
-        corpus_by_category[row["category"]].append(row)
+        corpus_by_category[row.category].append(row)
 
     used: set[str] = set()
     pick = _picker(corpus_by_category, used)
@@ -206,9 +193,9 @@ def select_candidates(
                     "role_category": role.category,
                     "requirements": requirement_texts,
                     "pair_kind": pair_kind,
-                    "candidate_id": row["candidate_id"],
-                    "resume_category": row["category"],
-                    "resume_text": row["text"],
+                    "candidate_id": row.candidate_id,
+                    "resume_category": row.category,
+                    "resume_text": row.text,
                 }
             )
     return candidates

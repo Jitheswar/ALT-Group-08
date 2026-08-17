@@ -119,8 +119,23 @@ class ShortlistEntry:
 
 
 @dataclass(frozen=True)
+class Comparison:
+    """One comparative-pass decision: `winner_id` was judged the stronger
+    Fit against `loser_id`, with a citable reason. The comparative pass
+    sets the final order of the top band - the part a Recruiter actually
+    reads - so this is what makes that order interrogable rather than
+    just the rubric Fit dimensions underneath it (ADR-0001).
+    """
+
+    winner_id: str
+    loser_id: str
+    justification: str
+
+
+@dataclass(frozen=True)
 class Shortlist:
     entries: tuple[ShortlistEntry, ...]
+    comparisons: tuple[Comparison, ...] = ()
 
 
 R = TypeVar("R")

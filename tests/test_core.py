@@ -115,7 +115,7 @@ def _fit_response(rating: FitRating = "strong") -> RankingResponse:
 
 
 def _comparative_response(winner: ComparativeWinner = "a") -> ComparativeResponse:
-    return ComparativeResponse(winner=winner)
+    return ComparativeResponse(winner=winner, justification="Stronger overall Fit")
 
 
 def test_every_submitted_candidate_appears_exactly_once_whatever_happened():
@@ -200,7 +200,7 @@ def test_model_client_double_records_every_call_it_receives():
     assert "Bob's resume" in model_client.calls[1].prompt
 
 
-def test_a_response_with_a_duplicate_verdict_becomes_unresolved():
+def test_a_response_with_a_duplicate_verdict_is_retried_then_becomes_unresolved():
     role = _role()
     candidates = [Candidate(id="alice", resume=Resume(text="Alice's resume"))]
     response_with_duplicate = ScreeningResponse(
@@ -216,12 +216,52 @@ def test_a_response_with_a_duplicate_verdict_becomes_unresolved():
             ),
         ]
     )
-    model_client = RecordingFakeModelClient(responses=[response_with_duplicate])
+    # Schema-valid but id-mismatched responses are retried up to
+    # _MAX_SCREENING_ATTEMPTS times (ADR-0007's retry-twice policy) before
+    # becoming Unresolved, so the fake needs one scripted per attempt.
+    model_client = RecordingFakeModelClient(
+        responses=[response_with_duplicate, response_with_duplicate, response_with_duplicate]
+    )
 
     shortlist = run_screening(role, candidates, model_client)
 
     [entry] = shortlist.entries
     assert isinstance(entry.outcome, Unresolved)
+    assert len(model_client.calls) == 3
+
+
+def test_an_id_mismatched_response_is_retried_and_a_later_valid_response_succeeds():
+    role = _role()
+    candidates = [Candidate(id="alice", resume=Resume(text="Alice's resume"))]
+    response_with_duplicate = ScreeningResponse(
+        verdicts=[
+            RequirementVerdictResponse(
+                requirement_id="req-python", met=True, justification="6 years of Python"
+            ),
+            RequirementVerdictResponse(
+                requirement_id="req-python", met=True, justification="Actually 6 years of Python"
+            ),
+        ]
+    )
+    valid_response = ScreeningResponse(
+        verdicts=[
+            RequirementVerdictResponse(
+                requirement_id="req-python", met=True, justification="6 years of Python"
+            ),
+            RequirementVerdictResponse(
+                requirement_id="req-degree", met=True, justification="B.Sc. listed"
+            ),
+        ]
+    )
+    model_client = RecordingFakeModelClient(
+        responses=[response_with_duplicate, valid_response, _fit_response()]
+    )
+
+    shortlist = run_screening(role, candidates, model_client)
+
+    [entry] = shortlist.entries
+    assert isinstance(entry.outcome, Qualified)
+    assert len(model_client.calls) == 3
 
 
 def test_stable_prompt_prefix_is_byte_identical_across_every_call_in_a_run():

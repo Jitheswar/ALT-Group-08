@@ -31,7 +31,7 @@ from screening.model_client import (
 from screening.proxy_relevance import CorpusResume
 from screening.ranking import DIMENSIONS
 from screening.sweep import run_sweep, sweep_role
-from tests.fakes import RecordingFakeModelClient, ScoreBasedComparativeFakeModelClient
+from tests.fakes import RecordingFakeModelClient, StrengthBasedComparativeFakeModelClient
 
 REQ = Requirement(id="req-1", text="Some Requirement")
 
@@ -107,7 +107,7 @@ def test_sweep_role_scores_the_shortlists_actual_order_against_proxy_relevance()
         CorpusResume(candidate_id="c4", category="Testing", text="Backend engineer. STRENGTH:2"),
     ]
     evaluation_role = _evaluation_role("eval-role-01", "Data Science")
-    model_client = ScoreBasedComparativeFakeModelClient(
+    model_client = StrengthBasedComparativeFakeModelClient(
         responses=[_qualified(), _qualified(), _qualified(), _qualified(), _fit(), _fit(), _fit(), _fit()]
     )
 
@@ -117,9 +117,9 @@ def test_sweep_role_scores_the_shortlists_actual_order_against_proxy_relevance()
     # the "Data Science" category, so the Shortlist's Proxy Relevance
     # sequence is [not, relevant, not, relevant].
     expected_relevance = [False, True, False, True]
-    assert result.precision_at_k == precision_at_k(expected_relevance, 4)
-    assert result.ndcg_at_k == ndcg_at_k(expected_relevance, 4)
-    assert result.reciprocal_rank == reciprocal_rank(expected_relevance)
+    assert result.proxy_precision_at_k == precision_at_k(expected_relevance, 4)
+    assert result.proxy_ndcg_at_k == ndcg_at_k(expected_relevance, 4)
+    assert result.proxy_reciprocal_rank == reciprocal_rank(expected_relevance)
     assert result.evaluation_role_id == "eval-role-01"
     assert result.category == "Data Science"
 
@@ -158,7 +158,7 @@ def test_run_sweep_averages_rank_metrics_across_every_evaluation_role():
     # of Screening's outcome - both are scripted Disqualified to avoid
     # needing any Ranking or comparative responses.
     role_b = _evaluation_role("eval-role-02", "Finance")
-    model_client = ScoreBasedComparativeFakeModelClient(
+    model_client = StrengthBasedComparativeFakeModelClient(
         responses=[
             _qualified(), _qualified(), _fit(), _fit(),
             _disqualified(), _disqualified(),
@@ -168,9 +168,9 @@ def test_run_sweep_averages_rank_metrics_across_every_evaluation_role():
     report = run_sweep([role_a, role_b], corpus, model_client, k=2)
 
     assert len(report.results) == 2
-    assert report.mean_precision_at_k == pytest.approx(0.5)
-    assert report.mean_ndcg_at_k == pytest.approx(0.5)
-    assert report.mrr == pytest.approx(0.5)
+    assert report.mean_proxy_precision_at_k == pytest.approx(0.5)
+    assert report.mean_proxy_ndcg_at_k == pytest.approx(0.5)
+    assert report.proxy_mrr == pytest.approx(0.5)
 
 
 def test_run_sweep_aggregates_parse_failure_rate_across_every_evaluation_role():
@@ -191,7 +191,7 @@ def test_run_sweep_requires_at_least_one_evaluation_role():
         run_sweep([], [], RecordingFakeModelClient(responses=[]), k=1)
 
 
-def test_sweep_role_falls_back_to_zeroed_metrics_for_a_client_with_none():
+def test_sweep_role_reports_zeroed_metrics_for_a_client_that_never_mutates_them():
     corpus = [CorpusResume(candidate_id="c1", category="Data Science", text="Backend engineer.")]
     role = _evaluation_role("eval-role-01", "Data Science")
     model_client = RecordingFakeModelClient(responses=[_disqualified()])

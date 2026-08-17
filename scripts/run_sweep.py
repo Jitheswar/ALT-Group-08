@@ -22,32 +22,18 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from dataclasses import asdict
 from pathlib import Path
 
-from screening.deepseek_client import DeepSeekModelClient, build_live_transport
-from screening.eval_roles import read_evaluation_roles
-from screening.gold_set import exclude_gold_set_candidates, read_gold_set
-from screening.proxy_relevance import CorpusResume
+from screening.deepseek_client import MissingApiKey, build_deepseek_client
+from screening.eval_roles import read_evaluation_roles_metadata
+from screening.evaluation_inputs import GOLD_SET_HELP, load_evaluation_inputs
+from screening.ranking import DEFAULT_TOP_BAND_SIZE
+from screening.resume_atlas import RESUME_ATLAS_DATASET
 from screening.sweep import run_sweep
 
-RESUME_ATLAS_DATASET = "ahmedheakl/resume-atlas"
-API_KEY_ENV_VAR = "DEEPSEEK_API_KEY"
-
-
-def load_resume_atlas_corpus(parquet_path: Path) -> list[CorpusResume]:
-    import pyarrow.parquet as pq
-
-    table = pq.read_table(parquet_path, columns=["Category", "Text"])
-    categories = table.column("Category").to_pylist()
-    texts = table.column("Text").to_pylist()
-    return [
-        CorpusResume(candidate_id=f"resume-atlas-{index}", category=category or "", text=text)
-        for index, (category, text) in enumerate(zip(categories, texts))
-        if text and text.strip()
-    ]
+DEFAULT_METADATA_PATH = Path("data/evaluation_roles/metadata.json")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -58,7 +44,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--evaluation-roles-dir", type=Path, default=Path("data/evaluation_roles/roles")
     )
-    parser.add_argument("--gold-set", type=Path, default=Path("data/gold_set/gold_set.json"))
+    parser.add_argument(
+        "--gold-set",
+        type=Path,
+        default=None,
+        help=GOLD_SET_HELP.format(noun="sweep corpus"),
+    )
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument(
         "--top-band-size",
@@ -66,46 +57,69 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="k for Precision@k and NDCG@k; defaults to Ranking's own top band size",
     )
+    parser.add_argument(
+        "--metadata",
+        type=Path,
+        default=None,
+        help=(
+            "Path to the checked-in Evaluation Roles metadata, reporting "
+            "reviewed_sample_size alongside the sweep's rank metrics "
+            "(spec story 34); defaults to data/evaluation_roles/metadata.json "
+            "if present. A path given explicitly must exist"
+        ),
+    )
     args = parser.parse_args(argv)
 
-    api_key = os.environ.get(API_KEY_ENV_VAR)
-    if not api_key:
-        print(f"error: {API_KEY_ENV_VAR} must be set to run the sweep", file=sys.stderr)
+    try:
+        model_client = build_deepseek_client(usage="to run the sweep")
+    except MissingApiKey as exc:
+        print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    evaluation_roles = read_evaluation_roles(args.evaluation_roles_dir)
-    if not evaluation_roles:
-        print(f"error: no Evaluation Roles found under {args.evaluation_roles_dir}", file=sys.stderr)
+    inputs = load_evaluation_inputs(
+        evaluation_roles_dir=args.evaluation_roles_dir,
+        resume_atlas_parquet=args.resume_atlas_parquet,
+        gold_set=args.gold_set,
+        held_out_noun="sweep corpus",
+    )
+    if inputs is None:
         return 1
+    evaluation_roles, corpus = inputs.evaluation_roles, inputs.corpus
 
-    corpus = load_resume_atlas_corpus(args.resume_atlas_parquet)
-    if not corpus:
-        print(f"error: no Resumes loaded from {args.resume_atlas_parquet}", file=sys.stderr)
+    if args.metadata is not None and not args.metadata.exists():
+        print(f"error: Evaluation Roles metadata not found at {args.metadata}", file=sys.stderr)
         return 1
+    metadata_path = args.metadata or (DEFAULT_METADATA_PATH if DEFAULT_METADATA_PATH.exists() else None)
+    metadata = read_evaluation_roles_metadata(metadata_path) if metadata_path is not None else None
 
-    if args.gold_set.exists():
-        gold_set = read_gold_set(args.gold_set)
-        before = len(corpus)
-        corpus = exclude_gold_set_candidates(corpus, gold_set)
-        print(f"Held {before - len(corpus)} Gold Set Resume(s) out of the sweep corpus")
+    top_band_size = args.top_band_size if args.top_band_size is not None else DEFAULT_TOP_BAND_SIZE
+    report = run_sweep(evaluation_roles, corpus, model_client, k=top_band_size)
 
-    model_client = DeepSeekModelClient(build_live_transport(api_key))
-    kwargs = {} if args.top_band_size is None else {"k": args.top_band_size}
-    report = run_sweep(evaluation_roles, corpus, model_client, **kwargs)
+    output = asdict(report)
+    if metadata is not None:
+        output["reviewed_sample_size"] = metadata.reviewed_sample_size
+        output["total_evaluation_roles"] = metadata.total_evaluation_roles
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(asdict(report), indent=2) + "\n")
+    args.out.write_text(json.dumps(output, indent=2) + "\n")
 
     print(
         f"Swept {len(evaluation_roles)} Evaluation Role(s) over {len(corpus)} Resume(s) "
         f"from {RESUME_ATLAS_DATASET}:"
     )
     print(
-        f"  NDCG@{report.k}={report.mean_ndcg_at_k:.3f} "
-        f"Precision@{report.k}={report.mean_precision_at_k:.3f} "
-        f"MRR={report.mrr:.3f} "
+        f"  Proxy Relevance NDCG@{report.k}={report.mean_proxy_ndcg_at_k:.3f} "
+        f"Proxy Relevance Precision@{report.k}={report.mean_proxy_precision_at_k:.3f} "
+        f"Proxy Relevance MRR={report.proxy_mrr:.3f} "
         f"parse-failure-rate={report.parse_failure_rate:.1%}"
     )
+    if metadata is not None:
+        print(
+            f"  reviewed-sample-size={metadata.reviewed_sample_size}/"
+            f"{metadata.total_evaluation_roles} Evaluation Roles"
+        )
+    else:
+        print("  reviewed-sample-size=unknown (no Evaluation Roles metadata found)")
     print(f"Wrote sweep report to {args.out}")
     return 0
 

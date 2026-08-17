@@ -18,10 +18,11 @@ from screening.model_client import (
     ProposedRequirementResponse,
     RankingResponse,
     RequirementVerdictResponse,
+    RunMetrics,
     ScreeningResponse,
     T,
 )
-from screening.ranking import DIMENSIONS
+from screening.ranking import DIMENSIONS, RATING_WEIGHT
 
 _REQUIREMENT_LINE = re.compile(r"^- \(([^)]+)\)\s*(.+)$")
 # The numbered-list branch requires the marker not be followed by another
@@ -42,11 +43,19 @@ class UnsupportedResponseModel(Exception):
     pass
 
 
+class UnknownDimension(Exception):
+    pass
+
+
 class ScriptedModelClient:
     """Matches each Requirement against the Resume text by keyword search,
     and proposes Requirements from a Job Description by reading its bullet
-    or numbered list lines.
+    or numbered list lines. `metrics` stays at its zero default: this
+    client never fails to parse and has no cache tokens to report.
     """
+
+    def __init__(self) -> None:
+        self.metrics = RunMetrics()
 
     def complete(self, prompt: str, response_model: type[T]) -> T:
         if response_model is ScreeningResponse:
@@ -72,10 +81,14 @@ class ScriptedModelClient:
         if response_model is ComparativeResponse:
             role_title = _parse_role_title(prompt)
             resume_a_text, resume_b_text = _parse_comparative_resumes(prompt)
-            score_a = _fit_score(role_title, resume_a_text)
-            score_b = _fit_score(role_title, resume_b_text)
-            winner: ComparativeWinner = "a" if score_a >= score_b else "b"
-            return response_model(winner=winner)
+            weight_a = _fit_weight(role_title, resume_a_text)
+            weight_b = _fit_weight(role_title, resume_b_text)
+            winner: ComparativeWinner = "a" if weight_a >= weight_b else "b"
+            justification = (
+                f"Candidate {winner.upper()} rates higher across more dimensions "
+                f"for {role_title}"
+            )
+            return response_model(winner=winner, justification=justification)
 
         raise UnsupportedResponseModel(
             f"ScriptedModelClient does not support {response_model!r}"
@@ -169,14 +182,9 @@ def _fit_dimensions(role_title: str, resume_text: str) -> list[FitDimensionRespo
     ]
 
 
-_LEVEL_WEIGHT: dict[FitRating, int] = {
-    "minimal": 0, "moderate": 1, "strong": 2, "exceptional": 3,
-}
-
-
-def _fit_score(role_title: str, resume_text: str) -> int:
+def _fit_weight(role_title: str, resume_text: str) -> int:
     return sum(
-        _LEVEL_WEIGHT[_rate_dimension(dimension, role_title, resume_text)]
+        RATING_WEIGHT[_rate_dimension(dimension, role_title, resume_text)]
         for dimension in DIMENSIONS
     )
 
@@ -197,7 +205,7 @@ def _rate_dimension(dimension: str, role_title: str, redacted_resume_text: str) 
     matches ScriptedModelClient's Screening approach of scoring by evidence
     density rather than any real understanding of the Resume.
     """
-    if dimension == "role_relevance":
+    if dimension == "role_suitability":
         role_words = [w for w in _KEYWORD.findall(role_title) if len(w) > 2]
         hits = sum(1 for w in role_words if _find_keyword(w, redacted_resume_text) is not None)
         return _bucket(hits, thresholds=(0, 1, 2))
@@ -209,7 +217,7 @@ def _rate_dimension(dimension: str, role_title: str, redacted_resume_text: str) 
             _IMPACT_NUMBER.findall(redacted_resume_text)
         )
         return _bucket(hits, thresholds=(0, 2, 4))
-    raise UnsupportedResponseModel(f"ScriptedModelClient does not know dimension {dimension!r}")
+    raise UnknownDimension(f"ScriptedModelClient does not know dimension {dimension!r}")
 
 
 def _snippet(resume_text: str, match: re.Match[str]) -> str:

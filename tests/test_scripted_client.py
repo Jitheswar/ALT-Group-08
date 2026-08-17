@@ -173,6 +173,7 @@ def test_scripted_client_supports_comparative_responses():
     response = client.complete(prompt, ComparativeResponse)
 
     assert response.winner == "a"
+    assert response.justification
 
 
 def test_scripted_client_comparative_response_is_deterministic_given_the_same_prompt():

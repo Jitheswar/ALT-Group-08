@@ -31,8 +31,8 @@ _JOB_DESCRIPTION = (
 
 
 @pytest.fixture
-def client():
-    app = create_app(ScriptedModelClient())
+def client(tmp_path):
+    app = create_app(ScriptedModelClient(), runs_dir=tmp_path / "runs")
     app.testing = True
     return app.test_client()
 
@@ -187,6 +187,70 @@ def test_shortlist_includes_every_submitted_candidate_qualified_and_disqualified
     assert "bob" in out and "Disqualified" in out
     # Every outcome carries a readable Justification, not just a verdict.
     assert "Resume cites" in out or "does not evidence" in out
+
+
+def test_shortlist_page_explains_the_comparative_passs_order(client):
+    """When two or more Candidates qualify, the comparative pass reorders
+    the top band, so the Shortlist page must show why - a citable
+    justification for each comparison, not just the rubric Fit dimensions
+    underneath it (ADR-0001).
+    """
+    proposed_html = _propose(client).get_data(as_text=True)
+    proposed_ids = _proposed_ids(proposed_html)
+    approved = _approve(
+        client,
+        proposed_ids=proposed_ids,
+        proposed_texts=_proposed_texts(proposed_html),
+        keep_ids=[proposed_ids[0]],
+    )
+    requirements_json = _requirements_json_from(approved.get_data(as_text=True))
+
+    alice_pdf = minimal_pdf("Built backend services in Python for ten years.")
+    bob_pdf = minimal_pdf("Built backend services in Python for eight years.")
+    response = _upload_pdfs(
+        client,
+        title="Backend Engineer",
+        requirements_json=requirements_json,
+        files=[(alice_pdf, "alice.pdf"), (bob_pdf, "bob.pdf")],
+    )
+
+    assert response.status_code == 200
+    out = response.get_data(as_text=True)
+    assert "How the top of the Shortlist was ordered" in out
+    assert " over " in out
+
+
+def test_a_completed_screening_run_is_recorded_as_a_durable_run_record(client, tmp_path):
+    """spec:56/150: each Screening Run is kept as a durable, append-only
+    record so a Recruiter can revisit how a decision was reached weeks
+    later - the same record the CLI writes via FileRunStore, not something
+    only the CLI path produces.
+    """
+    proposed_html = _propose(client).get_data(as_text=True)
+    proposed_ids = _proposed_ids(proposed_html)
+    approved = _approve(
+        client,
+        proposed_ids=proposed_ids,
+        proposed_texts=_proposed_texts(proposed_html),
+        keep_ids=[proposed_ids[0]],
+    )
+    requirements_json = _requirements_json_from(approved.get_data(as_text=True))
+
+    alice_pdf = minimal_pdf("Built backend services in Python for six years.")
+    _upload_pdfs(
+        client,
+        title="Backend Engineer",
+        requirements_json=requirements_json,
+        files=[(alice_pdf, "alice.pdf")],
+    )
+
+    run_files = list((tmp_path / "runs").glob("*.jsonl"))
+    assert len(run_files) == 1
+    lines = run_files[0].read_text().splitlines()
+    header = json.loads(lines[0])
+    assert header["role"]["title"] == "Backend Engineer"
+    entry = json.loads(lines[1])
+    assert entry["candidate_id"] == "alice"
 
 
 def test_two_resumes_with_the_same_filename_get_distinct_candidate_ids(client):

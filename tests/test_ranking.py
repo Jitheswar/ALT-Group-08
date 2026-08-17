@@ -14,7 +14,7 @@ which of the two entries the sort passes as "a" versus "b" is an
 implementation detail, so `_comparison()` is only safe for a test that
 doesn't care which candidate wins (e.g. a redaction check, or a failure
 path). Any test asserting on the resulting *order* - for a band of two or
-more - uses ScoreBasedComparativeFakeModelClient instead: a comparator
+more - uses StrengthBasedComparativeFakeModelClient instead: a comparator
 that judges by a "STRENGTH:<n>" marker embedded in each Candidate's resume
 text, correct regardless of call order or argument order.
 """
@@ -45,7 +45,7 @@ from screening.model_client import (
 )
 from screening.ranking import build_comparative_prompt, build_ranking_prompt
 from screening.ranking import DIMENSIONS
-from tests.fakes import RecordingFakeModelClient, ScoreBasedComparativeFakeModelClient
+from tests.fakes import RecordingFakeModelClient, StrengthBasedComparativeFakeModelClient
 
 REQ_PYTHON = Requirement(id="req-python", text="5+ years of Python")
 
@@ -90,7 +90,7 @@ def _fit(rating: FitRating) -> RankingResponse:
 
 
 def _comparison(winner: ComparativeWinner = "a") -> ComparativeResponse:
-    return ComparativeResponse(winner=winner)
+    return ComparativeResponse(winner=winner, justification="Stronger overall Fit")
 
 
 def test_qualified_candidates_are_ordered_by_fit_best_first():
@@ -104,13 +104,47 @@ def test_qualified_candidates_are_ordered_by_fit_best_first():
         Candidate(id="alice", resume=Resume(text="Alice Doe\nSenior backend engineer. STRENGTH:1")),
         Candidate(id="bob", resume=Resume(text="Bob Roe\nJunior backend engineer. STRENGTH:9")),
     ]
-    model_client = ScoreBasedComparativeFakeModelClient(
+    model_client = StrengthBasedComparativeFakeModelClient(
         responses=[_qualified(), _qualified(), _fit("minimal"), _fit("exceptional")]
     )
 
     shortlist = run_screening(role, candidates, model_client)
 
     assert [entry.candidate_id for entry in shortlist.entries] == ["bob", "alice"]
+
+
+def test_the_comparative_pass_records_a_citable_justification_for_the_bands_order():
+    role = _role()
+    candidates = [
+        Candidate(id="alice", resume=Resume(text="Alice Doe\nSenior backend engineer. STRENGTH:1")),
+        Candidate(id="bob", resume=Resume(text="Bob Roe\nJunior backend engineer. STRENGTH:9")),
+    ]
+    model_client = StrengthBasedComparativeFakeModelClient(
+        responses=[_qualified(), _qualified(), _fit("minimal"), _fit("exceptional")]
+    )
+
+    shortlist = run_screening(role, candidates, model_client)
+
+    [comparison] = shortlist.comparisons
+    assert comparison.winner_id == "bob"
+    assert comparison.loser_id == "alice"
+    assert comparison.justification
+
+
+def test_a_failed_comparative_call_records_no_comparison():
+    role = _role()
+    candidates = [_candidate("a", strength=9), _candidate("b", strength=1)]
+    model_client = RecordingFakeModelClient(
+        responses=[
+            _qualified(), _qualified(),
+            _fit("exceptional"), _fit("minimal"),
+            ModelClientError("provider returned malformed output"),
+        ]
+    )
+
+    shortlist = run_screening(role, candidates, model_client)
+
+    assert shortlist.comparisons == ()
 
 
 def test_qualified_candidates_carry_a_structured_per_dimension_fit_not_a_bare_scalar():
@@ -258,7 +292,7 @@ def test_comparative_pass_reorders_the_top_band_and_leaves_the_tail_rubric_order
         _candidate("c", strength=5),
         _candidate("d", strength=5),
     ]
-    model_client = ScoreBasedComparativeFakeModelClient(
+    model_client = StrengthBasedComparativeFakeModelClient(
         responses=[
             _qualified(), _qualified(), _qualified(), _qualified(),
             _fit("exceptional"), _fit("strong"), _fit("moderate"), _fit("minimal"),
@@ -275,7 +309,7 @@ def test_comparative_pass_makes_on_the_order_of_n_log_n_calls_over_the_band_not_
     candidates = [_candidate(f"c{i}", strength=i) for i in range(8)] + [
         _candidate("d1", strength=0)
     ]
-    model_client = ScoreBasedComparativeFakeModelClient(
+    model_client = StrengthBasedComparativeFakeModelClient(
         responses=(
             [_qualified() for _ in range(8)]
             + [_disqualified()]
@@ -305,7 +339,7 @@ def test_comparative_pass_ordering_is_stable_given_identical_inputs_and_a_determ
     ]
 
     def _run() -> list[str]:
-        model_client = ScoreBasedComparativeFakeModelClient(
+        model_client = StrengthBasedComparativeFakeModelClient(
             responses=[
                 _qualified(), _qualified(), _qualified(),
                 _fit("strong"), _fit("strong"), _fit("strong"),

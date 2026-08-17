@@ -8,7 +8,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from screening.model_client import ComparativeResponse, ComparativeWinner
+from screening.model_client import ComparativeResponse, ComparativeWinner, RunMetrics
 
 
 @dataclass
@@ -21,6 +21,7 @@ class RecordedCall:
 class RecordingFakeModelClient:
     responses: list[Any]
     calls: list[RecordedCall] = field(default_factory=list)
+    metrics: RunMetrics = field(default_factory=RunMetrics)
 
     def complete(self, prompt: str, response_model: type) -> Any:
         self.calls.append(RecordedCall(prompt=prompt, response_model=response_model))
@@ -36,7 +37,7 @@ _STRENGTH = re.compile(r"STRENGTH:(\d+)")
 
 
 @dataclass
-class ScoreBasedComparativeFakeModelClient:
+class StrengthBasedComparativeFakeModelClient:
     """Like RecordingFakeModelClient - Screening and Ranking responses are
     scripted and popped in call order - except ComparativeResponse calls
     are judged from a "STRENGTH:<n>" marker embedded in each Candidate's
@@ -51,6 +52,7 @@ class ScoreBasedComparativeFakeModelClient:
 
     responses: list[Any]
     calls: list[RecordedCall] = field(default_factory=list)
+    metrics: RunMetrics = field(default_factory=RunMetrics)
 
     def complete(self, prompt: str, response_model: type) -> Any:
         self.calls.append(RecordedCall(prompt=prompt, response_model=response_model))
@@ -58,7 +60,7 @@ class ScoreBasedComparativeFakeModelClient:
             return self._judge(prompt)
         if not self.responses:
             raise AssertionError(
-                "ScoreBasedComparativeFakeModelClient has no more scripted responses"
+                "StrengthBasedComparativeFakeModelClient has no more scripted responses"
             )
         response = self.responses.pop(0)
         if isinstance(response, Exception):
@@ -71,7 +73,7 @@ class ScoreBasedComparativeFakeModelClient:
         winner: ComparativeWinner = (
             "a" if _strength(resume_a_text) >= _strength(resume_b_text) else "b"
         )
-        return ComparativeResponse(winner=winner)
+        return ComparativeResponse(winner=winner, justification=f"Candidate {winner} is stronger")
 
 
 def _strength(resume_text: str) -> int:

@@ -1,14 +1,21 @@
 """Redaction is a pure function tested directly on fixed inputs, per the
-spec's testing decisions - no model client involved. The held-out sample
-test near the bottom is the verification pass the ticket calls for: a batch
-of synthetic Resumes, each carrying a known identity signal, checked that
-none of those signals survive redact_resume.
+spec's testing decisions - no model client involved. Two held-out samples
+follow the hand-authored fixtures above: a synthetic batch, each carrying a
+known identity signal, and - the verification pass the ticket actually
+calls for - a sample drawn from the real, checked-in Gold Set corpus
+(ADR-0008), genuinely held out of every sweep and not shaped to the
+redactor's own heuristics the way the synthetic batch necessarily is.
 """
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 from screening.domain import Resume
-from screening.redaction import redact_resume
+from screening.redaction import detect_candidate_name, redact_resume
+
+_GOLD_SET_PATH = Path(__file__).parent.parent / "data" / "gold_set" / "gold_set.json"
 
 
 def test_a_name_on_its_own_first_line_is_redacted_everywhere_it_recurs():
@@ -345,3 +352,51 @@ def test_no_name_year_or_nationality_token_survives_across_the_held_out_sample()
         assert fixture["graduation_year"] not in redacted.text, (
             f"graduation year leaked for {fixture['name']!r}"
         )
+
+
+# --- Held-out sample: the real corpus, not fixtures shaped to pass -------
+#
+# The batch above is hand-authored to exactly the shape the redactor's own
+# heuristics expect (a capitalised name on its own leading line, standard
+# newlines) - it cannot reveal a heuristic that only works on that shape.
+# resume-atlas, the corpus every sweep actually runs against, is a single
+# line of unpunctuated lowercase text with no such structure, and detection
+# was previously 0% against it. This sample is drawn from the checked-in
+# Gold Set (ADR-0008) - genuinely held out of every sweep - so it is the
+# verification pass the ticket calls for: does detection actually work at
+# the scale the system is evaluated at, not just on fixtures built to pass.
+
+
+def test_name_detection_works_on_a_held_out_sample_of_the_real_corpus():
+    rows = json.loads(_GOLD_SET_PATH.read_text())
+    sample = rows[:100]
+    assert sample, "the checked-in Gold Set is empty - nothing to sample"
+
+    detected = [
+        (row["resume"]["text"], name)
+        for row in sample
+        if (name := detect_candidate_name(row["resume"]["text"])) is not None
+    ]
+
+    # Not 100%: a name-shaped token pair only exists where the corpus's own
+    # text happens to lead with one, and a handful of Resumes lead with a
+    # job title or nothing detectable instead (e.g. "etl developer robert
+    # smith..." - the real name is two tokens further in than this tier
+    # looks). That residual gap is a known limit of a positional heuristic
+    # without true named-entity recognition (see ticket 04's NER decision),
+    # not a regression to silently tolerate growing.
+    detection_rate = len(detected) / len(sample)
+    assert detection_rate >= 0.85, f"only {detection_rate:.0%} of the sample had a name detected"
+
+    leaked = [
+        (text, name) for text, name in detected if name in redact_resume(Resume(text=text)).text
+    ]
+    # Not asserted at exactly zero: resume-atlas occasionally glues a name
+    # into an adjacent token with no separating space (e.g. an email local
+    # part surviving punctuation-stripping as "marcus hallyahoocom"), which
+    # a word-boundary-respecting redaction correctly declines to touch mid-
+    # word rather than risk stripping an unrelated word's tail. That is a
+    # corpus tokenisation artifact, not a name-detection failure, so the
+    # bar here is "rare", not "impossible".
+    leak_rate = len(leaked) / len(detected)
+    assert leak_rate <= 0.05, f"{leak_rate:.0%} of detected names survived redaction: {leaked}"

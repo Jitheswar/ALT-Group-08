@@ -14,7 +14,6 @@ core (tests/test_pdf_adapter.py) - no fake or double stands in for pypdf.
 from __future__ import annotations
 
 import io
-from pathlib import Path
 
 from pypdf import PdfReader
 from pypdf.errors import PdfReadError
@@ -54,8 +53,3 @@ def extract_resume(pdf_bytes: bytes) -> Resume:
             "PDF produced no extractable text - it may be a scanned image with no text layer"
         )
     return Resume(text=text)
-
-
-def extract_resume_from_path(path: Path) -> Resume:
-    """Convenience wrapper over extract_resume for a PDF already on disk."""
-    return extract_resume(path.read_bytes())

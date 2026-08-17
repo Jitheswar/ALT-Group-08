@@ -21,16 +21,19 @@ class ModelClientError(Exception):
 
 
 class ModelClient(Protocol):
+    metrics: "RunMetrics"
+
     def complete(self, prompt: str, response_model: type[T]) -> T: ...
 
 
 @dataclass
 class RunMetrics:
     """Reliability and cost counters a ModelClient may accumulate across a
-    run, read afterwards for the run record (ADR-0007). A client that has
-    nothing to report - the scripted double, for instance - simply has no
-    `metrics` attribute; callers read it with `getattr(client, "metrics",
-    RunMetrics())`.
+    run, read afterwards for the run record (ADR-0007). A client with
+    nothing to report - the scripted double, for instance - simply carries
+    a `metrics` that never moves off its zero default, so every caller can
+    read `model_client.metrics` directly rather than guarding the read with
+    `getattr`.
     """
 
     total_attempts: int = 0
@@ -81,11 +84,11 @@ ComparativeWinner = Literal["a", "b"]
 
 
 class ComparativeResponse(BaseModel):
-    """No justification field: unlike Screening and rubric Ranking, the
-    comparative pass only reorders an already-justified Fit (ADR-0005's
-    citability guarantee is met by the rubric dimensions on that Fit), so
-    there is nothing downstream that would read a comparative-pass
-    justification.
+    """The comparative pass sets the final order of the top band - the
+    part a Recruiter actually reads - so its winner carries its own
+    justification (ADR-0001) rather than relying on the rubric Fit
+    dimensions underneath it, which explain a judgement, not an order.
     """
 
     winner: ComparativeWinner
+    justification: str
