@@ -66,3 +66,7 @@ uv run pyright
 ```
 
 Requires Python 3.14 and [uv](https://docs.astral.sh/uv/).
+
+## License
+
+[MIT](./LICENSE)
